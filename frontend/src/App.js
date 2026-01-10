@@ -1,53 +1,106 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Pages
+import LandingPage from "@/pages/LandingPage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import GalleryPage from "@/pages/GalleryPage";
+import ArtworkDetailPage from "@/pages/ArtworkDetailPage";
+import SecureViewerPage from "@/pages/SecureViewerPage";
+import DashboardPage from "@/pages/DashboardPage";
+import MarketplacePage from "@/pages/MarketplacePage";
+import AdminPage from "@/pages/AdminPage";
+import AuthCallback from "@/pages/AuthCallback";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-primary animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  
+  return children;
 };
+
+// App Router with session_id detection
+function AppRouter() {
+  const location = useLocation();
+  
+  // Check URL fragment for session_id - must be synchronous during render
+  if (location.hash?.includes('session_id=')) {
+    return <AuthCallback />;
+  }
+  
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/gallery" element={<GalleryPage />} />
+      <Route path="/artwork/:id" element={<ArtworkDetailPage />} />
+      <Route path="/marketplace" element={<MarketplacePage />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      
+      {/* Protected Routes */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/secure-view/:id" element={
+        <ProtectedRoute>
+          <SecureViewerPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin" element={
+        <ProtectedRoute>
+          <AdminPage />
+        </ProtectedRoute>
+      } />
+      
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
+    <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
+        <div className="App min-h-screen bg-background">
+          {/* Noise overlay */}
+          <div className="noise-overlay" />
+          
+          <AppRouter />
+          
+          <Toaster 
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: 'hsl(0 0% 4%)',
+                border: '1px solid hsl(0 0% 15%)',
+                color: 'hsl(0 0% 93%)',
+              },
+            }}
+          />
+        </div>
       </BrowserRouter>
-    </div>
+    </AuthProvider>
   );
 }
 
