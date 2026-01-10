@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "total_tests": 7,
+    "passed": 6,
+    "failed": 1,
+    "success_rate": 85.7
+  },
+  "test_details": [
+    {
+      "test": "Seed Demo Data",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-01-10T16:33:41.420737"
+    },
+    {
+      "test": "Get Artworks List",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-01-10T16:33:41.962383"
+    },
+    {
+      "test": "User Registration",
+      "success": false,
+      "details": "Status code mismatch",
+      "timestamp": "2026-01-10T16:33:42.530991"
+    },
+    {
+      "test": "Get Artworks for Detail Test",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-01-10T16:33:43.571704"
+    },
+    {
+      "test": "Get Artwork Detail",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-01-10T16:33:43.610120"
+    },
+    {
+      "test": "Get Marketplace Listings",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-01-10T16:33:45.148577"
+    },
+    {
+      "test": "Request Web3 Nonce",
+      "success": true,
+      "details": "",
+      "timestamp": "2026-01-10T16:33:46.191624"
+    }
+  ],
+  "timestamp": "2026-01-10T16:33:46.692518"
+}
