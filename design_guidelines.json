@@ -1,0 +1,181 @@
+{
+  "identity": {
+    "persona": "E1 - The Anti-AI Designer",
+    "philosophy": "Fusion of High-End Art Gallery & Cyberpunk Security. We don't build 'marketplaces'; we build 'Digital Vaults'.",
+    "principles": [
+      "Fusion: Renaissance Art meets Blockchain Terminal.",
+      "Emotion: The feeling of holding a rare asset.",
+      "Depth: Use z-index and glassmorphism to create a sense of security and layers.",
+      "Darkness: A gallery is dark so the art can shine."
+    ]
+  },
+  "typography": {
+    "strategy": "The 'Old Money Tech' Fusion",
+    "heading_font": {
+      "name": "Playfair Display",
+      "type": "Serif",
+      "usage": "Hero titles, Section headers, Art Titles",
+      "weights": ["400", "700"],
+      "import_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
+    },
+    "body_font": {
+      "name": "Manrope",
+      "type": "Sans-serif",
+      "usage": "UI text, descriptions, buttons",
+      "weights": ["400", "500", "600"],
+      "import_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap"
+    },
+    "mono_font": {
+      "name": "JetBrains Mono",
+      "type": "Monospace",
+      "usage": "License IDs, Prices, Transaction Hashes, Security Logs",
+      "weights": ["400"],
+      "import_url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+    }
+  },
+  "colors": {
+    "theme": "dark",
+    "palette": {
+      "background": {
+        "default": "#050505",
+        "paper": "#0A0A0A",
+        "subtle": "#121212"
+      },
+      "primary": {
+        "main": "#00F0FF",
+        "hover": "#00C2CC",
+        "foreground": "#000000"
+      },
+      "secondary": {
+        "main": "#D4AF37",
+        "foreground": "#000000"
+      },
+      "accent": {
+        "neon_purple": "#BD00FF",
+        "signal_green": "#00FF94",
+        "error_red": "#FF2E2E"
+      },
+      "text": {
+        "primary": "#EDEDED",
+        "secondary": "#A1A1AA",
+        "muted": "#52525B"
+      },
+      "border": {
+        "default": "#27272A",
+        "active": "#3F3F46"
+      }
+    },
+    "gradients": {
+      "hero_glow": "radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%)",
+      "glass_surface": "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)",
+      "golden_sheen": "linear-gradient(45deg, #D4AF37 0%, #FEE180 50%, #D4AF37 100%)"
+    }
+  },
+  "layout_strategies": {
+    "marketing": {
+      "grid": "The Tetris Grid",
+      "spacing": "Generous (p-12 to p-24)",
+      "container": "max-w-7xl mx-auto"
+    },
+    "gallery": {
+      "grid": "Masonry or Dense Grid (min-w-[300px])",
+      "card_style": "Cardless or Minimal Border",
+      "gap": "gap-6"
+    },
+    "dashboard": {
+      "grid": "The Control Room (Bento)",
+      "density": "High",
+      "surface": "Glassmorphism Panels"
+    },
+    "secure_viewer": {
+      "layout": "Immersive Theater",
+      "background": "Deepest Black (#000000)",
+      "ui_overlay": "Floating Glass Controls"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-widest font-bold text-xs px-8 py-3 transition-all hover:shadow-[0_0_20px_rgba(0,240,255,0.3)]",
+      "secondary": "border border-border bg-transparent hover:bg-white/5 text-foreground rounded-none uppercase tracking-widest text-xs px-8 py-3",
+      "ghost": "hover:bg-white/5 text-muted-foreground hover:text-foreground"
+    },
+    "cards": {
+      "glass": "bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl",
+      "solid": "bg-card border border-border",
+      "interactive": "group relative overflow-hidden border border-white/5 bg-white/[0.02] hover:border-primary/50 transition-colors duration-500"
+    },
+    "inputs": {
+      "style": "bg-black/20 border-white/10 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 rounded-none h-12 font-mono text-sm"
+    },
+    "navigation": {
+      "style": "fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/5"
+    }
+  },
+  "visual_enhancers": {
+    "textures": [
+      "Noise overlay (opacity 0.03) on all solid backgrounds",
+      "Scanlines (subtle) on 'Secure Viewer' mode"
+    ],
+    "effects": [
+      "Glow: drop-shadow-[0_0_15px_rgba(0,240,255,0.3)] for active states",
+      "Blur: backdrop-blur-xl for overlays"
+    ],
+    "animations": {
+      "hover": "transition-all duration-300 ease-out hover:-translate-y-1",
+      "enter": "animate-in fade-in slide-in-from-bottom-4 duration-700"
+    }
+  },
+  "image_urls": {
+    "hero_backgrounds": [
+      {
+        "url": "https://images.unsplash.com/photo-1764258559789-40cf1eb2025f?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Neon Abstract Lines Pink",
+        "category": "hero"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1764258560286-b3aa856c8ff0?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Neon Abstract Lines Yellow",
+        "category": "hero"
+      }
+    ],
+    "gallery_context": [
+      {
+        "url": "https://images.unsplash.com/photo-1761403794164-65897bc570a6?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Modern Dark Gallery Interior",
+        "category": "about"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1767001376210-b16507b18c43?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Woman in Dark Gallery",
+        "category": "about"
+      }
+    ],
+    "tech_abstracts": [
+      {
+        "url": "https://images.unsplash.com/photo-1644190018970-53ab9d652f79?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Crypto Abstract Purple",
+        "category": "features"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1506555191898-a76bacf004ca?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Numbers Data Wall",
+        "category": "features"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'lucide-react' and 'framer-motion' immediately.",
+    "2. FONTS: Add the Google Fonts imports to index.css immediately.",
+    "3. TAILWIND: Update tailwind.config.js with the colors and fonts defined above.",
+    "4. COMPONENTS: When using Shadcn, override the 'rounded-md' with 'rounded-none' or 'rounded-sm' to match the sharp, technical aesthetic.",
+    "5. LAYOUT: Do not use standard containers. Use full-width sections with internal max-w constraints.",
+    "6. SECURE VIEWER: This is the core feature. It must look like a 'Vault'. Use dark backgrounds, mono fonts for metadata, and disable right-click via JS.",
+    "7. IMAGES: Use the provided URLs for placeholders. Do not use generic placeholders."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop': No generic gradients, no centered text blocks without purpose.",
+    "Dark Mode First: Design for dark mode primarily. Light mode is secondary.",
+    "Micro-interactions: Every button must have a hover state. Every page load must have a stagger animation.",
+    "Data-TestID: All interactive elements must have data-testid attributes."
+  ]
+}
