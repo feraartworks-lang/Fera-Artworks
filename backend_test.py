@@ -110,7 +110,7 @@ class ArtChainAPITester:
         timestamp = int(time.time())
         test_user = {
             "name": f"Test User {timestamp}",
-            "email": f"test.user.{timestamp}@artchain.test",
+            "email": f"test.user.{timestamp}@example.com",
             "password": "TestPass123!"
         }
         
