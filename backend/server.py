@@ -357,6 +357,9 @@ async def get_session_data(request: Request, response: Response):
     
     user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
     
+    # Create JWT token for API calls
+    jwt_token = create_jwt_token(user_id, user["email"])
+    
     await create_audit_log("user_login", user_id, {"method": "google"})
     
     return {
@@ -365,7 +368,8 @@ async def get_session_data(request: Request, response: Response):
         "name": user["name"],
         "picture": user.get("picture"),
         "wallet_address": user.get("wallet_address"),
-        "balance": user.get("balance", 0.0)
+        "balance": user.get("balance", 0.0),
+        "access_token": jwt_token
     }
 
 # Web3 Authentication

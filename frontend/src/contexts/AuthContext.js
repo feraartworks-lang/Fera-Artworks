@@ -82,11 +82,10 @@ export const AuthProvider = ({ children }) => {
       withCredentials: true
     });
     
-    const userData = response.data;
-    // Store a generated token for API calls
-    const mockToken = `google_${Date.now()}`;
-    localStorage.setItem('auth_token', mockToken);
-    setToken(mockToken);
+    const { access_token, ...userData } = response.data;
+    // Store the JWT token for API calls
+    localStorage.setItem('auth_token', access_token);
+    setToken(access_token);
     setUser(userData);
     
     return userData;
