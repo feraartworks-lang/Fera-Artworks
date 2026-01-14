@@ -216,19 +216,36 @@ async def get_current_user(request: Request) -> dict:
     
     return user
 
-async def create_audit_log(action: str, user_id: str, details: dict):
-    """Create encrypted audit log that auto-deletes after 3 days"""
+async def create_audit_log(action: str, user_id: str, details: dict, artwork_id: str = None):
+    """
+    Create encrypted audit log.
+    - Logs are stored without expiration initially
+    - When a refund occurs, all related logs get expires_at set to 3 days from refund
+    - TTL index automatically deletes expired logs
+    """
     log_data = {
         "log_id": generate_id("log_"),
         "action": action,
         "user_id": user_id,
+        "artwork_id": artwork_id,
         "details": details,
         "created_at": datetime.now(timezone.utc),
-        "expires_at": datetime.now(timezone.utc) + timedelta(days=3)
+        "expires_at": None  # No expiration until refund occurs
     }
     await db.audit_logs.insert_one(log_data)
-    # Create TTL index if not exists
+    # Create TTL index if not exists (only deletes when expires_at is set)
     await db.audit_logs.create_index("expires_at", expireAfterSeconds=0)
+
+async def set_audit_logs_expiration(artwork_id: str):
+    """
+    Set expiration for all audit logs related to an artwork after refund.
+    Logs will be automatically deleted 3 days after refund.
+    """
+    expires_at = datetime.now(timezone.utc) + timedelta(days=3)
+    await db.audit_logs.update_many(
+        {"artwork_id": artwork_id},
+        {"$set": {"expires_at": expires_at}}
+    )
 
 # ==================== AUTH ENDPOINTS ====================
 
