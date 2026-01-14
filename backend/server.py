@@ -671,7 +671,7 @@ async def download_artwork(artwork_id: str, request: Request):
     await create_audit_log("artwork_downloaded", user["user_id"], {
         "artwork_id": artwork_id,
         "timestamp": datetime.now(timezone.utc).isoformat()
-    })
+    }, artwork_id=artwork_id)
     
     file_path = artwork.get("file_path")
     if file_path and Path(file_path).exists():
@@ -735,7 +735,7 @@ async def purchase_artwork(purchase: PurchaseRequest, request: Request):
         "artwork_id": purchase.artwork_id,
         "amount": total,
         "method": purchase.payment_method
-    })
+    }, artwork_id=purchase.artwork_id)
     
     return {
         "message": "Purchase successful",
@@ -875,7 +875,7 @@ async def buy_from_marketplace(listing_id: str, request: Request):
         "artwork_id": listing["artwork_id"],
         "seller_id": listing["seller_id"],
         "amount": sale_price
-    })
+    }, artwork_id=listing["artwork_id"])
     
     return {
         "message": "Purchase successful",
@@ -964,7 +964,11 @@ async def request_refund(refund: RefundRequest, request: Request):
     await create_audit_log("refund_processed", user["user_id"], {
         "artwork_id": refund.artwork_id,
         "amount": refund_amount
-    })
+    }, artwork_id=refund.artwork_id)
+    
+    # Set expiration for all audit logs related to this artwork
+    # Logs will be automatically deleted 3 days after refund
+    await set_audit_logs_expiration(refund.artwork_id)
     
     return {
         "message": "Refund processed",
