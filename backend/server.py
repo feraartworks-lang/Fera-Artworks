@@ -1102,6 +1102,47 @@ async def admin_get_transactions():
     transactions = await db.transactions.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return transactions
 
+@api_router.get("/admin/audit-logs")
+async def admin_get_audit_logs(artwork_id: str = None):
+    """
+    Get audit logs for admin panel.
+    - Logs without expires_at are active (artwork not refunded)
+    - Logs with expires_at will be deleted 3 days after refund
+    - Only returns logs that haven't expired yet
+    """
+    query = {}
+    if artwork_id:
+        query["artwork_id"] = artwork_id
+    
+    # Only get logs that either have no expiration or haven't expired yet
+    query["$or"] = [
+        {"expires_at": None},
+        {"expires_at": {"$gt": datetime.now(timezone.utc)}}
+    ]
+    
+    logs = await db.audit_logs.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return logs
+
+@api_router.get("/admin/audit-logs/stats")
+async def admin_get_audit_stats():
+    """Get audit log statistics"""
+    total_logs = await db.audit_logs.count_documents({})
+    active_logs = await db.audit_logs.count_documents({
+        "$or": [
+            {"expires_at": None},
+            {"expires_at": {"$gt": datetime.now(timezone.utc)}}
+        ]
+    })
+    pending_deletion = await db.audit_logs.count_documents({
+        "expires_at": {"$ne": None, "$lte": datetime.now(timezone.utc) + timedelta(days=3)}
+    })
+    
+    return {
+        "total_logs": total_logs,
+        "active_logs": active_logs,
+        "pending_deletion": pending_deletion
+    }
+
 # ==================== SEED DATA ENDPOINT ====================
 
 @api_router.post("/seed")
