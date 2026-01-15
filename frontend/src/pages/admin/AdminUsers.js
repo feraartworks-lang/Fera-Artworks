@@ -342,6 +342,77 @@ const AdminUsers = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bank Info Dialog */}
+      <Dialog open={showBankInfoDialog} onOpenChange={setShowBankInfoDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-xl flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-blue-400" />
+              Bank Information
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Bank details for {selectedUser?.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-700">
+              <div className="grid gap-4">
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-zinc-500 mt-0.5" />
+                  <div>
+                    <p className="text-zinc-500 text-xs uppercase tracking-wider">Account Holder</p>
+                    <p className="text-white font-medium">{selectedUser?.account_holder_name || selectedUser?.name || '-'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <CreditCard className="w-5 h-5 text-zinc-500 mt-0.5" />
+                  <div>
+                    <p className="text-zinc-500 text-xs uppercase tracking-wider">IBAN</p>
+                    <p className="text-white font-mono text-sm">{selectedUser?.iban || '-'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <Building2 className="w-5 h-5 text-zinc-500 mt-0.5" />
+                  <div>
+                    <p className="text-zinc-500 text-xs uppercase tracking-wider">Bank Name</p>
+                    <p className="text-white">{selectedUser?.bank_name || '-'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <Wallet className="w-5 h-5 text-zinc-500 mt-0.5" />
+                  <div>
+                    <p className="text-zinc-500 text-xs uppercase tracking-wider">SWIFT/BIC</p>
+                    <p className="text-white font-mono">{selectedUser?.swift_bic || '-'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {selectedUser?.wallet_address && (
+              <div className="p-4 bg-purple-500/10 rounded-lg border border-purple-500/30">
+                <div className="flex items-start gap-3">
+                  <Wallet className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <div>
+                    <p className="text-purple-400 text-xs uppercase tracking-wider">Crypto Wallet</p>
+                    <p className="text-white font-mono text-sm break-all">{selectedUser?.wallet_address}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBankInfoDialog(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
