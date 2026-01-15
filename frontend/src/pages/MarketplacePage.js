@@ -161,7 +161,33 @@ const MarketplacePage = () => {
     <div className="min-h-screen bg-background" data-testid="marketplace-page">
       <Navbar />
       
-      <main className="pt-24 pb-16">
+      {/* Coming Soon Overlay */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ top: '80px' }}>
+        {/* Blur Background */}
+        <div className="absolute inset-0 bg-background/60 backdrop-blur-md"></div>
+        
+        {/* Message Card */}
+        <div className="relative z-10 max-w-lg mx-4 p-8 bg-card/95 border border-primary/30 rounded-2xl shadow-2xl text-center">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+            <Store className="w-8 h-8 text-primary" />
+          </div>
+          <h2 className="font-serif text-2xl font-bold text-foreground mb-4">
+            Marketplace Çok Yakında
+          </h2>
+          <p className="text-muted-foreground leading-relaxed">
+            En kısa zamanda Marketplace hizmetimizle karşınıza çıkacağız. 
+            Sizin için en iyi şekilde hizmet vermeye devam edeceğiz, 
+            şu an da sadece sabrınızı istiyoruz.
+          </p>
+          <div className="mt-6 pt-6 border-t border-border">
+            <p className="text-sm text-muted-foreground">
+              Ferâ Ekibi
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <main className="pt-24 pb-16 pointer-events-none select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
