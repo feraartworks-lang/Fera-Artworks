@@ -31,7 +31,7 @@ const Navbar = () => {
               <span className="font-serif font-bold text-primary-foreground text-lg">A</span>
             </div>
             <span className="font-serif text-xl font-bold text-foreground tracking-wider">
-              ARTCHAIN
+              FERÂ
             </span>
           </Link>
 
