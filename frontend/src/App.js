@@ -77,11 +77,19 @@ function AppRouter() {
           <SecureViewerPage />
         </ProtectedRoute>
       } />
-      <Route path="/admin" element={
-        <ProtectedRoute>
-          <AdminPage />
-        </ProtectedRoute>
-      } />
+      
+      {/* Admin Routes - Separate authentication */}
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="artworks" element={<AdminArtworks />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="transactions" element={<AdminTransactions />} />
+        <Route path="audit-logs" element={<AdminAuditLogs />} />
+        <Route path="alerts" element={<AdminAlerts />} />
+        <Route path="reports" element={<AdminReports />} />
+      </Route>
       
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
