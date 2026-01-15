@@ -334,6 +334,10 @@ const DashboardPage = () => {
                 <ArrowUpRight className="w-4 h-4 mr-2" />
                 My Listings
               </TabsTrigger>
+              <TabsTrigger value="settings" data-testid="tab-settings">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </TabsTrigger>
             </TabsList>
 
             {/* Collection Tab */}
