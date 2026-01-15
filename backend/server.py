@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, status, Depends, Request, UploadFile, File, Response
+from fastapi import FastAPI, APIRouter, HTTPException, status, Depends, Request, UploadFile, File, Response, Form
 from fastapi.responses import StreamingResponse, FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -19,6 +19,8 @@ from eth_account.messages import encode_defunct
 import httpx
 import base64
 import io
+import csv
+import json
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -32,6 +34,10 @@ db = client[os.environ['DB_NAME']]
 JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_hex(32))
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 168  # 7 days
+
+# FOUNDER ADMIN Configuration - Only ONE admin can exist
+FOUNDER_ADMIN_EMAIL = os.environ.get('FOUNDER_ADMIN_EMAIL', 'founder@artchain.com')
+FOUNDER_ADMIN_SECRET = os.environ.get('FOUNDER_ADMIN_SECRET', 'ArtChain_Founder_2024_SecretKey')
 
 # Upload directory for artworks
 UPLOAD_DIR = ROOT_DIR / "uploads"
