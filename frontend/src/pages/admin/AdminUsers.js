@@ -151,6 +151,7 @@ const AdminUsers = () => {
                   <TableHead className="text-zinc-400">Email</TableHead>
                   <TableHead className="text-zinc-400">Auth Type</TableHead>
                   <TableHead className="text-zinc-400">Balance</TableHead>
+                  <TableHead className="text-zinc-400">Bank Info</TableHead>
                   <TableHead className="text-zinc-400">Status</TableHead>
                   <TableHead className="text-zinc-400">Joined</TableHead>
                   <TableHead className="text-zinc-400 text-right">Actions</TableHead>
