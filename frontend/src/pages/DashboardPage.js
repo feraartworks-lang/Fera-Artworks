@@ -148,6 +148,22 @@ const DashboardPage = () => {
     toast.success('Copied to clipboard');
   };
 
+  const handleSaveBankInfo = async () => {
+    setIsSavingBank(true);
+    try {
+      await axios.put(
+        `${API}/user/bank-info`,
+        bankInfo,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success('Bank information saved successfully');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to save bank information');
+    } finally {
+      setIsSavingBank(false);
+    }
+  };
+
   const getTransactionIcon = (type) => {
     switch (type) {
       case 'purchase':
