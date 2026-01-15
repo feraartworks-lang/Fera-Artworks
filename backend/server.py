@@ -1218,6 +1218,7 @@ async def admin_login(credentials: AdminLoginRequest):
     """
     Special login for the FOUNDER ADMIN only.
     Requires email, password AND admin secret key.
+    If 2FA is enabled, also requires TOTP code.
     """
     # Verify admin secret
     if credentials.admin_secret != FOUNDER_ADMIN_SECRET:
@@ -1247,7 +1248,9 @@ async def admin_login(credentials: AdminLoginRequest):
             "balance": 0.0,
             "created_at": datetime.now(timezone.utc),
             "auth_type": "admin",
-            "is_founder_admin": True
+            "is_founder_admin": True,
+            "two_factor_enabled": False,
+            "two_factor_secret": None
         }
         await db.users.insert_one(user_doc)
         user = user_doc
@@ -1257,6 +1260,14 @@ async def admin_login(credentials: AdminLoginRequest):
             await create_system_alert("warning", "Failed Admin Password", 
                 "Incorrect password for founder admin", "security")
             raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Check 2FA if enabled
+        if user.get("two_factor_enabled") and user.get("two_factor_secret"):
+            # 2FA is required - return special response if no code provided
+            return {
+                "requires_2fa": True,
+                "message": "Two-factor authentication required"
+            }
         
         # Ensure is_founder_admin flag is set
         if not user.get("is_founder_admin"):
@@ -1276,9 +1287,156 @@ async def admin_login(credentials: AdminLoginRequest):
             "user_id": user["user_id"],
             "email": user["email"],
             "name": user["name"],
-            "is_founder_admin": True
+            "is_founder_admin": True,
+            "two_factor_enabled": user.get("two_factor_enabled", False)
         }
     }
+
+@api_router.post("/admin/login-2fa")
+async def admin_login_with_2fa(credentials: AdminLoginWith2FA):
+    """Admin login with 2FA verification"""
+    # Verify admin secret
+    if credentials.admin_secret != FOUNDER_ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Invalid admin credentials")
+    
+    if credentials.email != FOUNDER_ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    user = await db.users.find_one({"email": FOUNDER_ADMIN_EMAIL}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="Admin not found")
+    
+    # Verify password
+    if not verify_password(credentials.password, user.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Verify 2FA code
+    if not credentials.totp_code:
+        raise HTTPException(status_code=400, detail="2FA code required")
+    
+    totp = pyotp.TOTP(user.get("two_factor_secret"))
+    if not totp.verify(credentials.totp_code):
+        await create_system_alert("warning", "Failed 2FA Attempt", 
+            "Invalid 2FA code for founder admin", "security")
+        raise HTTPException(status_code=401, detail="Invalid 2FA code")
+    
+    token = create_jwt_token(user["user_id"], user["email"])
+    await create_audit_log("admin_login_2fa", user["user_id"], {"ip": "system"})
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "user_id": user["user_id"],
+            "email": user["email"],
+            "name": user["name"],
+            "is_founder_admin": True,
+            "two_factor_enabled": True
+        }
+    }
+
+@api_router.post("/admin/2fa/setup")
+async def setup_2fa(request: Request, data: TwoFactorSetup):
+    """Generate 2FA secret and QR code for admin"""
+    admin = await get_founder_admin(request)
+    
+    # Verify password again for security
+    user = await db.users.find_one({"user_id": admin["user_id"]}, {"_id": 0})
+    if not verify_password(data.password, user.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    
+    # Generate new secret
+    secret = pyotp.random_base32()
+    totp = pyotp.TOTP(secret)
+    
+    # Generate QR code
+    provisioning_uri = totp.provisioning_uri(name=admin["email"], issuer_name="Ferâ Admin")
+    
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(provisioning_uri)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+    
+    # Store secret temporarily (not enabled yet)
+    await db.users.update_one(
+        {"user_id": admin["user_id"]},
+        {"$set": {"two_factor_secret_pending": secret}}
+    )
+    
+    return {
+        "secret": secret,
+        "qr_code": f"data:image/png;base64,{qr_base64}",
+        "manual_entry": secret
+    }
+
+@api_router.post("/admin/2fa/verify-setup")
+async def verify_2fa_setup(request: Request, data: TwoFactorVerify):
+    """Verify 2FA code and enable 2FA"""
+    admin = await get_founder_admin(request)
+    
+    user = await db.users.find_one({"user_id": admin["user_id"]}, {"_id": 0})
+    pending_secret = user.get("two_factor_secret_pending")
+    
+    if not pending_secret:
+        raise HTTPException(status_code=400, detail="No pending 2FA setup")
+    
+    totp = pyotp.TOTP(pending_secret)
+    if not totp.verify(data.code):
+        raise HTTPException(status_code=401, detail="Invalid verification code")
+    
+    # Enable 2FA
+    await db.users.update_one(
+        {"user_id": admin["user_id"]},
+        {
+            "$set": {
+                "two_factor_enabled": True,
+                "two_factor_secret": pending_secret
+            },
+            "$unset": {"two_factor_secret_pending": ""}
+        }
+    )
+    
+    await create_audit_log("2fa_enabled", admin["user_id"], {"method": "totp"})
+    await create_system_alert("info", "2FA Enabled", "Two-factor authentication enabled for admin", "security")
+    
+    return {"message": "2FA enabled successfully", "enabled": True}
+
+@api_router.post("/admin/2fa/disable")
+async def disable_2fa(request: Request, data: TwoFactorVerify):
+    """Disable 2FA (requires current code)"""
+    admin = await get_founder_admin(request)
+    
+    user = await db.users.find_one({"user_id": admin["user_id"]}, {"_id": 0})
+    if not user.get("two_factor_enabled"):
+        raise HTTPException(status_code=400, detail="2FA is not enabled")
+    
+    totp = pyotp.TOTP(user.get("two_factor_secret"))
+    if not totp.verify(data.code):
+        raise HTTPException(status_code=401, detail="Invalid 2FA code")
+    
+    await db.users.update_one(
+        {"user_id": admin["user_id"]},
+        {
+            "$set": {"two_factor_enabled": False},
+            "$unset": {"two_factor_secret": "", "two_factor_secret_pending": ""}
+        }
+    )
+    
+    await create_audit_log("2fa_disabled", admin["user_id"], {})
+    await create_system_alert("warning", "2FA Disabled", "Two-factor authentication disabled for admin", "security")
+    
+    return {"message": "2FA disabled", "enabled": False}
+
+@api_router.get("/admin/2fa/status")
+async def get_2fa_status(request: Request):
+    """Check if 2FA is enabled for admin"""
+    admin = await get_founder_admin(request)
+    user = await db.users.find_one({"user_id": admin["user_id"]}, {"_id": 0})
+    return {"enabled": user.get("two_factor_enabled", False)}
 
 @api_router.get("/admin/verify")
 async def verify_admin(request: Request):
