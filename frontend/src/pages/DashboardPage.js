@@ -55,14 +55,21 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [artworksRes, transactionsRes, listingsRes] = await Promise.all([
+        const [artworksRes, transactionsRes, listingsRes, bankRes] = await Promise.all([
           axios.get(`${API}/user/artworks`, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API}/user/transactions`, { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get(`${API}/user/listings`, { headers: { Authorization: `Bearer ${token}` } })
+          axios.get(`${API}/user/listings`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API}/user/bank-info`, { headers: { Authorization: `Bearer ${token}` } })
         ]);
         setArtworks(artworksRes.data);
         setTransactions(transactionsRes.data);
         setListings(listingsRes.data);
+        setBankInfo({
+          iban: bankRes.data.iban || '',
+          bank_name: bankRes.data.bank_name || '',
+          account_holder_name: bankRes.data.account_holder_name || '',
+          swift_bic: bankRes.data.swift_bic || ''
+        });
       } catch (error) {
         console.error('Failed to fetch data:', error);
         toast.error('Failed to load dashboard data');
