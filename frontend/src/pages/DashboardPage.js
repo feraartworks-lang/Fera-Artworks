@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 import { 
   Image, Wallet, ArrowUpRight, ArrowDownLeft, Clock, 
   DollarSign, RefreshCw, Eye, Download, Loader2, 
-  CreditCard, ExternalLink, Copy
+  CreditCard, ExternalLink, Copy, Settings, Building2, Save
 } from 'lucide-react';
 import axios from 'axios';
 import { ethers } from 'ethers';
