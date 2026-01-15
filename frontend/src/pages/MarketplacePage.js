@@ -158,14 +158,11 @@ const MarketplacePage = () => {
   const otherListings = listings.filter(l => l.seller_id !== user?.user_id);
 
   return (
-    <div className="min-h-screen bg-background" data-testid="marketplace-page">
+    <div className="min-h-screen bg-background overflow-hidden" data-testid="marketplace-page">
       <Navbar />
       
-      {/* Coming Soon Overlay */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ top: '80px' }}>
-        {/* Blur Background */}
-        <div className="absolute inset-0 bg-background/60 backdrop-blur-md"></div>
-        
+      {/* Coming Soon Overlay - Full Screen */}
+      <div className="fixed inset-0 z-40 flex items-center justify-center bg-background/80 backdrop-blur-md">
         {/* Message Card */}
         <div className="relative z-10 max-w-lg mx-4 p-8 bg-card/95 border border-primary/30 rounded-2xl shadow-2xl text-center">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
