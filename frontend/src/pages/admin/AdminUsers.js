@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { 
   Search, Ban, UserCheck, Clock, Loader2, User, Wallet,
-  Mail, Calendar, DollarSign, Shield
+  Mail, Calendar, DollarSign, Shield, Building2, CreditCard, Eye
 } from 'lucide-react';
 
 const AdminUsers = () => {
