@@ -44,6 +44,7 @@ const AdminUsers = () => {
   
   // Dialog states
   const [showActionDialog, setShowActionDialog] = useState(false);
+  const [showBankInfoDialog, setShowBankInfoDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [actionType, setActionType] = useState('');
   const [actionReason, setActionReason] = useState('');
