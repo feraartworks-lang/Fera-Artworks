@@ -90,6 +90,7 @@ function AppRouter() {
         <Route path="audit-logs" element={<AdminAuditLogs />} />
         <Route path="alerts" element={<AdminAlerts />} />
         <Route path="reports" element={<AdminReports />} />
+        <Route path="settings" element={<AdminSettings />} />
       </Route>
       
       {/* Fallback */}
