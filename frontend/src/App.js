@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 
 // Pages
 import LandingPage from "@/pages/LandingPage";
@@ -13,8 +14,18 @@ import ArtworkDetailPage from "@/pages/ArtworkDetailPage";
 import SecureViewerPage from "@/pages/SecureViewerPage";
 import DashboardPage from "@/pages/DashboardPage";
 import MarketplacePage from "@/pages/MarketplacePage";
-import AdminPage from "@/pages/AdminPage";
 import AuthCallback from "@/pages/AuthCallback";
+
+// Admin Pages
+import AdminLoginPage from "@/pages/admin/AdminLoginPage";
+import AdminLayout from "@/pages/admin/AdminLayout";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminArtworks from "@/pages/admin/AdminArtworks";
+import AdminUsers from "@/pages/admin/AdminUsers";
+import AdminTransactions from "@/pages/admin/AdminTransactions";
+import AdminAuditLogs from "@/pages/admin/AdminAuditLogs";
+import AdminAlerts from "@/pages/admin/AdminAlerts";
+import AdminReports from "@/pages/admin/AdminReports";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
