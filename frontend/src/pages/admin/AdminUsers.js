@@ -187,6 +187,25 @@ const AdminUsers = () => {
                     <TableCell className="font-mono text-green-500">
                       ${(user.balance || 0).toFixed(2)}
                     </TableCell>
+                    <TableCell>
+                      {user.iban ? (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowBankInfoDialog(true);
+                          }}
+                          className="text-blue-400 hover:bg-blue-500/10"
+                          data-testid={`view-bank-info-${user.user_id}`}
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </Button>
+                      ) : (
+                        <span className="text-zinc-500 text-sm">Not provided</span>
+                      )}
+                    </TableCell>
                     <TableCell>{getStatusBadge(user)}</TableCell>
                     <TableCell className="text-zinc-400 text-sm">
                       {new Date(user.created_at).toLocaleDateString()}
