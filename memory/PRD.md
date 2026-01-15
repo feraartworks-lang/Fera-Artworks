@@ -1,4 +1,4 @@
-# ArtChain - Digital Art Ownership Platform PRD
+# Ferâ - Digital Art Ownership Platform PRD
 
 ## Original Problem Statement
 Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for unique digital artwork license-based ownership, transfer, resale and refund. The system defines artworks as ownership licenses (not files) and ensures security, traceability and value transfer.
@@ -72,10 +72,10 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - 1% Withdrawal Fee
 - Minimum resale price: 1% above purchase price
 
-### Admin Credentials (CHANGE IN PRODUCTION!)
-- Email: founder@artchain.com
-- Password: Admin123!
-- Secret Key: ArtChain_Founder_SecureKey_2024_XYZ
+### Security Notes
+- Admin credentials are stored securely in environment variables (`/app/backend/.env`)
+- Never commit credentials to version control
+- Change default secrets before production deployment
 
 ### Code Cleanup Completed
 - ✅ Removed obsolete `/app/frontend/src/pages/AdminPage.js`
