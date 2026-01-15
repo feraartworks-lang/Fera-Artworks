@@ -39,6 +39,7 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - ✅ **Manual refund/transfer operations**
 - ✅ **System alerts and notifications**
 - ✅ **CSV/JSON data export**
+- ✅ **User bank info (IBAN, Bank Name, Account Holder, SWIFT/BIC) storage and retrieval**
 
 ### Frontend (React + Shadcn UI + Tailwind)
 - ✅ Landing page with dark gallery theme
@@ -46,6 +47,7 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - ✅ Artwork detail page with purchase flow
 - ✅ Secure Viewer with right-click disabled
 - ✅ User Dashboard (collection, transactions, listings)
+- ✅ **User Dashboard Settings tab for bank info management**
 - ✅ P2P Marketplace (browse, list, buy)
 - ✅ Multi-auth support (Email, Google, MetaMask)
 - ✅ Responsive design with mobile support
@@ -55,6 +57,7 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - ✅ **Dashboard with platform statistics**
 - ✅ **Artwork management (create, edit, delete)**
 - ✅ **User management (ban, suspend, unban, unsuspend)**
+- ✅ **User bank info viewing (IBAN, Bank Name, SWIFT/BIC, Account Holder)**
 - ✅ **Transaction history with filtering**
 - ✅ **Manual refund processing**
 - ✅ **Manual ownership transfer**
@@ -71,6 +74,7 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 
 ### Admin Credentials (CHANGE IN PRODUCTION!)
 - Email: founder@artchain.com
+- Password: Admin123!
 - Secret Key: ArtChain_Founder_SecureKey_2024_XYZ
 
 ## Prioritized Backlog
