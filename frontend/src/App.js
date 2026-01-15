@@ -100,25 +100,27 @@ function AppRouter() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="App min-h-screen bg-background">
-          {/* Noise overlay */}
-          <div className="noise-overlay" />
-          
-          <AppRouter />
-          
-          <Toaster 
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: 'hsl(0 0% 4%)',
-                border: '1px solid hsl(0 0% 15%)',
-                color: 'hsl(0 0% 93%)',
-              },
-            }}
-          />
-        </div>
-      </BrowserRouter>
+      <AdminProvider>
+        <BrowserRouter>
+          <div className="App min-h-screen bg-background">
+            {/* Noise overlay */}
+            <div className="noise-overlay" />
+            
+            <AppRouter />
+            
+            <Toaster 
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: 'hsl(0 0% 4%)',
+                  border: '1px solid hsl(0 0% 15%)',
+                  color: 'hsl(0 0% 93%)',
+                },
+              }}
+            />
+          </div>
+        </BrowserRouter>
+      </AdminProvider>
     </AuthProvider>
   );
 }
