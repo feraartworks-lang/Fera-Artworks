@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Mail, Lock, Wallet, ArrowLeft, Loader2 } from 'lucide-react';
+import { Mail, Lock, Wallet, ArrowLeft, Loader2, Link2 } from 'lucide-react';
 import { ethers } from 'ethers';
+import { EthereumProvider } from '@walletconnect/ethereum-provider';
 
 const LoginPage = () => {
   const { login, loginWithGoogle, loginWithWeb3, requestWeb3Nonce } = useAuth();
@@ -21,6 +22,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isWeb3Loading, setIsWeb3Loading] = useState(false);
+  const [isWalletConnectLoading, setIsWalletConnectLoading] = useState(false);
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
