@@ -172,16 +172,16 @@ const MarketplacePage = () => {
             <Store className="w-8 h-8 text-primary" />
           </div>
           <h2 className="font-serif text-2xl font-bold text-foreground mb-4">
-            Marketplace Çok Yakında
+            Marketplace Coming Soon
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            En kısa zamanda Marketplace hizmetimizle karşınıza çıkacağız. 
-            Sizin için en iyi şekilde hizmet vermeye devam edeceğiz, 
-            şu an da sadece sabrınızı istiyoruz.
+            We will be launching our Marketplace service very soon. 
+            We are committed to providing you with the best experience possible, 
+            and we kindly ask for your patience in the meantime.
           </p>
           <div className="mt-6 pt-6 border-t border-border">
             <p className="text-sm text-muted-foreground">
-              Ferâ Ekibi
+              Ferâ Team
             </p>
           </div>
         </div>
