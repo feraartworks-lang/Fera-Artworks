@@ -198,6 +198,12 @@ class AlertCreate(BaseModel):
     message: str
     source: str  # "system", "user", "transaction", "security"
 
+class BankInfoUpdate(BaseModel):
+    iban: Optional[str] = None
+    bank_name: Optional[str] = None
+    account_holder_name: Optional[str] = None
+    swift_bic: Optional[str] = None
+
 # ==================== HELPER FUNCTIONS ====================
 
 def generate_id(prefix: str = "") -> str:
