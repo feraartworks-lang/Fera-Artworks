@@ -82,6 +82,37 @@ const RegisterPage = () => {
     }
   };
 
+  const handleWalletConnectLogin = async () => {
+    setIsWalletConnectLoading(true);
+    try {
+      const wcProvider = await EthereumProvider.init({
+        projectId: 'b820d127537d485abf9fe7e448e47fe7',
+        chains: [1],
+        showQrModal: true,
+        optionalChains: [137, 56, 42161],
+        metadata: {
+          name: 'Ferâ',
+          description: 'Digital Art Ownership Platform',
+          url: window.location.origin,
+          icons: [`${window.location.origin}/favicon.ico`]
+        }
+      });
+      await wcProvider.connect();
+      const address = wcProvider.accounts[0];
+      const { nonce, message } = await requestWeb3Nonce(address);
+      const signature = await wcProvider.request({ method: 'personal_sign', params: [message, address] });
+      await loginWithWeb3(address, signature, nonce);
+      toast.success('WalletConnect connected successfully!');
+      navigate('/dashboard');
+      await wcProvider.disconnect();
+    } catch (error) {
+      console.error('WalletConnect error:', error);
+      toast.error(error.message?.includes('User rejected') ? 'Connection rejected' : 'WalletConnect failed');
+    } finally {
+      setIsWalletConnectLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4" data-testid="register-page">
       <div className="absolute inset-0 bg-hero-glow opacity-50" />
