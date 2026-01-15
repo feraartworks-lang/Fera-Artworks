@@ -67,6 +67,7 @@ const AdminLayout = () => {
     { path: '/admin/audit-logs', icon: FileText, label: 'Audit Logs' },
     { path: '/admin/alerts', icon: Bell, label: 'Alerts', badge: alertCount },
     { path: '/admin/reports', icon: Download, label: 'Reports' },
+    { path: '/admin/settings', icon: Settings, label: 'Security' },
   ];
 
   return (
