@@ -19,6 +19,32 @@ export const AdminProvider = ({ children }) => {
         admin_secret: adminSecret
       });
       
+      // Check if 2FA is required
+      if (response.data.requires_2fa) {
+        return { requires_2fa: true };
+      }
+      
+      const { access_token, user } = response.data;
+      localStorage.setItem('admin_token', access_token);
+      setAdminToken(access_token);
+      setAdmin(user);
+      
+      return user;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const adminLoginWith2FA = async (email, password, adminSecret, totpCode) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${API}/admin/login-2fa`, {
+        email,
+        password,
+        admin_secret: adminSecret,
+        totp_code: totpCode
+      });
+      
       const { access_token, user } = response.data;
       localStorage.setItem('admin_token', access_token);
       setAdminToken(access_token);
@@ -81,6 +107,7 @@ export const AdminProvider = ({ children }) => {
       adminToken,
       isLoading,
       adminLogin,
+      adminLoginWith2FA,
       adminLogout,
       verifyAdmin,
       adminApi
