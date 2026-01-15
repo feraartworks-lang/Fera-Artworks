@@ -1151,13 +1151,91 @@ async def get_user_listings(request: Request):
 
 # ==================== ADMIN ENDPOINTS ====================
 
+# Admin Login - Special authentication for founder
+@api_router.post("/admin/login")
+async def admin_login(credentials: AdminLoginRequest):
+    """
+    Special login for the FOUNDER ADMIN only.
+    Requires email, password AND admin secret key.
+    """
+    # Verify admin secret
+    if credentials.admin_secret != FOUNDER_ADMIN_SECRET:
+        await create_system_alert("critical", "Failed Admin Login Attempt", 
+            f"Invalid admin secret used for email: {credentials.email}", "security")
+        raise HTTPException(status_code=403, detail="Invalid admin credentials")
+    
+    # Verify email matches founder
+    if credentials.email != FOUNDER_ADMIN_EMAIL:
+        await create_system_alert("critical", "Unauthorized Admin Access Attempt", 
+            f"Non-founder email attempted admin login: {credentials.email}", "security")
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Find or create founder admin user
+    user = await db.users.find_one({"email": FOUNDER_ADMIN_EMAIL}, {"_id": 0})
+    
+    if not user:
+        # Create founder admin account
+        user_id = generate_id("admin_")
+        user_doc = {
+            "user_id": user_id,
+            "email": FOUNDER_ADMIN_EMAIL,
+            "password_hash": hash_password(credentials.password),
+            "name": "Founder Admin",
+            "picture": None,
+            "wallet_address": None,
+            "balance": 0.0,
+            "created_at": datetime.now(timezone.utc),
+            "auth_type": "admin",
+            "is_founder_admin": True
+        }
+        await db.users.insert_one(user_doc)
+        user = user_doc
+    else:
+        # Verify password
+        if not verify_password(credentials.password, user.get("password_hash", "")):
+            await create_system_alert("warning", "Failed Admin Password", 
+                "Incorrect password for founder admin", "security")
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Ensure is_founder_admin flag is set
+        if not user.get("is_founder_admin"):
+            await db.users.update_one(
+                {"email": FOUNDER_ADMIN_EMAIL},
+                {"$set": {"is_founder_admin": True}}
+            )
+    
+    token = create_jwt_token(user["user_id"], user["email"])
+    
+    await create_audit_log("admin_login", user["user_id"], {"ip": "system"})
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "user_id": user["user_id"],
+            "email": user["email"],
+            "name": user["name"],
+            "is_founder_admin": True
+        }
+    }
+
+@api_router.get("/admin/verify")
+async def verify_admin(request: Request):
+    """Verify if current user is founder admin"""
+    admin = await get_founder_admin(request)
+    return {"verified": True, "email": admin["email"]}
+
 @api_router.get("/admin/stats")
 async def get_admin_stats(request: Request):
-    """Admin dashboard statistics"""
+    """Admin dashboard statistics - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
     total_users = await db.users.count_documents({})
     total_artworks = await db.artworks.count_documents({})
     total_transactions = await db.transactions.count_documents({})
     total_listings = await db.marketplace_listings.count_documents({"status": "active"})
+    banned_users = await db.users.count_documents({"status": "banned"})
+    suspended_users = await db.users.count_documents({"status": "suspended"})
     
     # Calculate totals
     pipeline = [
@@ -1170,42 +1248,333 @@ async def get_admin_stats(request: Request):
     ]
     transaction_stats = await db.transactions.aggregate(pipeline).to_list(100)
     
+    # Calculate revenue
+    total_revenue = 0
+    for stat in transaction_stats:
+        if stat["_id"] in ["purchase", "p2p_sale"]:
+            total_revenue += stat.get("total", 0) * 0.05 if stat["_id"] == "purchase" else stat.get("total", 0) * 0.01
+    
     return {
         "total_users": total_users,
         "total_artworks": total_artworks,
         "total_transactions": total_transactions,
         "active_listings": total_listings,
+        "banned_users": banned_users,
+        "suspended_users": suspended_users,
+        "estimated_revenue": round(total_revenue, 2),
         "transaction_breakdown": transaction_stats
     }
 
+# ==================== ADMIN ARTWORK MANAGEMENT ====================
+
 @api_router.get("/admin/artworks")
-async def admin_get_artworks():
-    artworks = await db.artworks.find({}, {"_id": 0}).to_list(1000)
+async def admin_get_artworks(request: Request):
+    """Get all artworks - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    artworks = await db.artworks.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return artworks
 
+@api_router.post("/admin/artworks")
+async def admin_create_artwork(
+    request: Request,
+    title: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    artist_name: str = Form(...),
+    category: str = Form("digital"),
+    tags: str = Form(""),
+    file: UploadFile = File(...)
+):
+    """Create new artwork - FOUNDER ONLY"""
+    admin = await get_founder_admin(request)
+    
+    artwork_id = generate_id("art_")
+    
+    # Save file
+    file_ext = file.filename.split(".")[-1] if file.filename else "jpg"
+    file_path = UPLOAD_DIR / f"{artwork_id}.{file_ext}"
+    preview_path = UPLOAD_DIR / f"{artwork_id}_preview.{file_ext}"
+    
+    content = await file.read()
+    with open(file_path, "wb") as f:
+        f.write(content)
+    
+    # Create preview (in production, add watermark)
+    with open(preview_path, "wb") as f:
+        f.write(content)
+    
+    tags_list = [t.strip().lower() for t in tags.split(",") if t.strip()]
+    
+    artwork_doc = {
+        "artwork_id": artwork_id,
+        "title": title,
+        "description": description,
+        "price": price,
+        "artist_name": artist_name,
+        "category": category,
+        "tags": tags_list,
+        "file_path": str(file_path),
+        "preview_url": f"/api/artworks/{artwork_id}/preview",
+        "is_purchased": False,
+        "is_used": False,
+        "is_transferred": False,
+        "is_refunded": False,
+        "owner_id": None,
+        "created_at": datetime.now(timezone.utc),
+        "license_protection_fee": price * 0.05,
+        "created_by": admin["user_id"]
+    }
+    await db.artworks.insert_one(artwork_doc)
+    
+    await create_audit_log("artwork_created", admin["user_id"], {
+        "artwork_id": artwork_id, "title": title
+    }, artwork_id=artwork_id)
+    
+    return {"message": "Artwork created", "artwork_id": artwork_id}
+
+@api_router.put("/admin/artworks/{artwork_id}")
+async def admin_update_artwork(artwork_id: str, update_data: AdminArtworkUpdate, request: Request):
+    """Update artwork - FOUNDER ONLY"""
+    admin = await get_founder_admin(request)
+    
+    artwork = await db.artworks.find_one({"artwork_id": artwork_id}, {"_id": 0})
+    if not artwork:
+        raise HTTPException(status_code=404, detail="Artwork not found")
+    
+    update_fields = {}
+    if update_data.title:
+        update_fields["title"] = update_data.title
+    if update_data.description:
+        update_fields["description"] = update_data.description
+    if update_data.price is not None:
+        update_fields["price"] = update_data.price
+        update_fields["license_protection_fee"] = update_data.price * 0.05
+    if update_data.artist_name:
+        update_fields["artist_name"] = update_data.artist_name
+    if update_data.category:
+        update_fields["category"] = update_data.category
+    if update_data.tags is not None:
+        update_fields["tags"] = [t.strip().lower() for t in update_data.tags.split(",") if t.strip()]
+    
+    if update_fields:
+        update_fields["updated_at"] = datetime.now(timezone.utc)
+        await db.artworks.update_one({"artwork_id": artwork_id}, {"$set": update_fields})
+    
+    await create_audit_log("artwork_updated", admin["user_id"], {
+        "artwork_id": artwork_id, "changes": list(update_fields.keys())
+    }, artwork_id=artwork_id)
+    
+    return {"message": "Artwork updated"}
+
+@api_router.delete("/admin/artworks/{artwork_id}")
+async def admin_delete_artwork(artwork_id: str, request: Request):
+    """Delete artwork - FOUNDER ONLY"""
+    admin = await get_founder_admin(request)
+    
+    artwork = await db.artworks.find_one({"artwork_id": artwork_id}, {"_id": 0})
+    if not artwork:
+        raise HTTPException(status_code=404, detail="Artwork not found")
+    
+    if artwork.get("is_purchased") and not artwork.get("is_refunded"):
+        raise HTTPException(status_code=400, detail="Cannot delete owned artwork. Process refund first.")
+    
+    # Delete file
+    file_path = artwork.get("file_path")
+    if file_path and Path(file_path).exists():
+        Path(file_path).unlink()
+    
+    await db.artworks.delete_one({"artwork_id": artwork_id})
+    
+    await create_audit_log("artwork_deleted", admin["user_id"], {
+        "artwork_id": artwork_id, "title": artwork.get("title")
+    })
+    
+    return {"message": "Artwork deleted"}
+
+# ==================== ADMIN USER MANAGEMENT ====================
+
 @api_router.get("/admin/users")
-async def admin_get_users():
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).to_list(1000)
+async def admin_get_users(request: Request):
+    """Get all users - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(1000)
     return users
 
+@api_router.post("/admin/users/action")
+async def admin_user_action(action_data: AdminUserAction, request: Request):
+    """Ban, suspend, unban, or unsuspend a user - FOUNDER ONLY"""
+    admin = await get_founder_admin(request)
+    
+    user = await db.users.find_one({"user_id": action_data.user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.get("is_founder_admin"):
+        raise HTTPException(status_code=403, detail="Cannot modify founder admin")
+    
+    update_fields = {}
+    
+    if action_data.action == "ban":
+        update_fields["status"] = "banned"
+        update_fields["banned_at"] = datetime.now(timezone.utc)
+        update_fields["ban_reason"] = action_data.reason
+    elif action_data.action == "suspend":
+        update_fields["status"] = "suspended"
+        update_fields["suspended_at"] = datetime.now(timezone.utc)
+        update_fields["suspend_reason"] = action_data.reason
+        if action_data.duration_days:
+            update_fields["suspend_until"] = datetime.now(timezone.utc) + timedelta(days=action_data.duration_days)
+    elif action_data.action == "unban":
+        update_fields["status"] = "active"
+        update_fields["banned_at"] = None
+        update_fields["ban_reason"] = None
+    elif action_data.action == "unsuspend":
+        update_fields["status"] = "active"
+        update_fields["suspended_at"] = None
+        update_fields["suspend_reason"] = None
+        update_fields["suspend_until"] = None
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action")
+    
+    await db.users.update_one({"user_id": action_data.user_id}, {"$set": update_fields})
+    
+    await create_audit_log(f"user_{action_data.action}", admin["user_id"], {
+        "target_user": action_data.user_id,
+        "reason": action_data.reason
+    })
+    
+    return {"message": f"User {action_data.action} successful"}
+
+# ==================== ADMIN MANUAL OPERATIONS ====================
+
+@api_router.post("/admin/manual-refund")
+async def admin_manual_refund(refund_data: AdminManualRefund, request: Request):
+    """Process manual refund - FOUNDER ONLY"""
+    admin = await get_founder_admin(request)
+    
+    artwork = await db.artworks.find_one({"artwork_id": refund_data.artwork_id}, {"_id": 0})
+    if not artwork:
+        raise HTTPException(status_code=404, detail="Artwork not found")
+    
+    if artwork.get("owner_id") != refund_data.user_id:
+        raise HTTPException(status_code=400, detail="User does not own this artwork")
+    
+    refund_amount = artwork.get("purchase_price", artwork["price"])
+    
+    # Create transaction
+    transaction_id = generate_id("txn_")
+    transaction = {
+        "transaction_id": transaction_id,
+        "type": "manual_refund",
+        "user_id": refund_data.user_id,
+        "artwork_id": refund_data.artwork_id,
+        "amount": refund_amount,
+        "status": "completed",
+        "admin_reason": refund_data.reason,
+        "processed_by": admin["user_id"],
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.transactions.insert_one(transaction)
+    
+    # Update artwork
+    await db.artworks.update_one(
+        {"artwork_id": refund_data.artwork_id},
+        {"$set": {
+            "is_refunded": True,
+            "is_purchased": False,
+            "is_used": False,
+            "owner_id": None,
+            "refunded_at": datetime.now(timezone.utc),
+            "manual_refund": True
+        }}
+    )
+    
+    # Credit user
+    await db.users.update_one(
+        {"user_id": refund_data.user_id},
+        {"$inc": {"balance": refund_amount}}
+    )
+    
+    await create_audit_log("manual_refund", admin["user_id"], {
+        "artwork_id": refund_data.artwork_id,
+        "user_id": refund_data.user_id,
+        "amount": refund_amount,
+        "reason": refund_data.reason
+    }, artwork_id=refund_data.artwork_id)
+    
+    await set_audit_logs_expiration(refund_data.artwork_id)
+    
+    return {"message": "Manual refund processed", "amount": refund_amount}
+
+@api_router.post("/admin/manual-transfer")
+async def admin_manual_transfer(transfer_data: AdminManualTransfer, request: Request):
+    """Process manual ownership transfer - FOUNDER ONLY"""
+    admin = await get_founder_admin(request)
+    
+    artwork = await db.artworks.find_one({"artwork_id": transfer_data.artwork_id}, {"_id": 0})
+    if not artwork:
+        raise HTTPException(status_code=404, detail="Artwork not found")
+    
+    if artwork.get("owner_id") != transfer_data.from_user_id:
+        raise HTTPException(status_code=400, detail="Source user does not own this artwork")
+    
+    to_user = await db.users.find_one({"user_id": transfer_data.to_user_id}, {"_id": 0})
+    if not to_user:
+        raise HTTPException(status_code=404, detail="Target user not found")
+    
+    # Create transaction
+    transaction_id = generate_id("txn_")
+    transaction = {
+        "transaction_id": transaction_id,
+        "type": "manual_transfer",
+        "from_user_id": transfer_data.from_user_id,
+        "to_user_id": transfer_data.to_user_id,
+        "artwork_id": transfer_data.artwork_id,
+        "status": "completed",
+        "admin_reason": transfer_data.reason,
+        "processed_by": admin["user_id"],
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.transactions.insert_one(transaction)
+    
+    # Transfer ownership
+    await db.artworks.update_one(
+        {"artwork_id": transfer_data.artwork_id},
+        {"$set": {
+            "owner_id": transfer_data.to_user_id,
+            "is_transferred": True,
+            "transferred_at": datetime.now(timezone.utc),
+            "manual_transfer": True
+        }}
+    )
+    
+    await create_audit_log("manual_transfer", admin["user_id"], {
+        "artwork_id": transfer_data.artwork_id,
+        "from_user": transfer_data.from_user_id,
+        "to_user": transfer_data.to_user_id,
+        "reason": transfer_data.reason
+    }, artwork_id=transfer_data.artwork_id)
+    
+    return {"message": "Manual transfer completed"}
+
+# ==================== ADMIN TRANSACTIONS & LOGS ====================
+
 @api_router.get("/admin/transactions")
-async def admin_get_transactions():
+async def admin_get_transactions(request: Request):
+    """Get all transactions - FOUNDER ONLY"""
+    await get_founder_admin(request)
     transactions = await db.transactions.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return transactions
 
 @api_router.get("/admin/audit-logs")
-async def admin_get_audit_logs(artwork_id: str = None):
-    """
-    Get audit logs for admin panel.
-    - Logs without expires_at are active (artwork not refunded)
-    - Logs with expires_at will be deleted 3 days after refund
-    - Only returns logs that haven't expired yet
-    """
+async def admin_get_audit_logs(request: Request, artwork_id: str = None):
+    """Get audit logs - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
     query = {}
     if artwork_id:
         query["artwork_id"] = artwork_id
     
-    # Only get logs that either have no expiration or haven't expired yet
     query["$or"] = [
         {"expires_at": None},
         {"expires_at": {"$gt": datetime.now(timezone.utc)}}
@@ -1215,8 +1584,10 @@ async def admin_get_audit_logs(artwork_id: str = None):
     return logs
 
 @api_router.get("/admin/audit-logs/stats")
-async def admin_get_audit_stats():
-    """Get audit log statistics"""
+async def admin_get_audit_stats(request: Request):
+    """Get audit log statistics - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
     total_logs = await db.audit_logs.count_documents({})
     active_logs = await db.audit_logs.count_documents({
         "$or": [
@@ -1233,6 +1604,193 @@ async def admin_get_audit_stats():
         "active_logs": active_logs,
         "pending_deletion": pending_deletion
     }
+
+# ==================== ADMIN ALERTS ====================
+
+@api_router.get("/admin/alerts")
+async def admin_get_alerts(request: Request, unread_only: bool = False):
+    """Get admin alerts - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
+    query = {}
+    if unread_only:
+        query["is_read"] = False
+    
+    alerts = await db.admin_alerts.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return alerts
+
+@api_router.get("/admin/alerts/count")
+async def admin_get_unread_alert_count(request: Request):
+    """Get unread alert count - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    count = await db.admin_alerts.count_documents({"is_read": False})
+    return {"unread_count": count}
+
+@api_router.put("/admin/alerts/{alert_id}/read")
+async def admin_mark_alert_read(alert_id: str, request: Request):
+    """Mark alert as read - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    await db.admin_alerts.update_one({"alert_id": alert_id}, {"$set": {"is_read": True}})
+    return {"message": "Alert marked as read"}
+
+@api_router.put("/admin/alerts/read-all")
+async def admin_mark_all_alerts_read(request: Request):
+    """Mark all alerts as read - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    await db.admin_alerts.update_many({}, {"$set": {"is_read": True}})
+    return {"message": "All alerts marked as read"}
+
+@api_router.delete("/admin/alerts/{alert_id}")
+async def admin_delete_alert(alert_id: str, request: Request):
+    """Delete an alert - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    await db.admin_alerts.delete_one({"alert_id": alert_id})
+    return {"message": "Alert deleted"}
+
+# ==================== ADMIN REPORTS & EXPORT ====================
+
+@api_router.get("/admin/reports/summary")
+async def admin_get_report_summary(request: Request, start_date: str = None, end_date: str = None):
+    """Get summary report - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
+    date_filter = {}
+    if start_date:
+        date_filter["$gte"] = datetime.fromisoformat(start_date)
+    if end_date:
+        date_filter["$lte"] = datetime.fromisoformat(end_date)
+    
+    query = {}
+    if date_filter:
+        query["created_at"] = date_filter
+    
+    # Transactions summary
+    tx_pipeline = [
+        {"$match": {**query, "status": "completed"}},
+        {"$group": {
+            "_id": "$type",
+            "count": {"$sum": 1},
+            "total_amount": {"$sum": "$amount"},
+            "total_fees": {"$sum": {"$ifNull": ["$fee", 0]}}
+        }}
+    ]
+    tx_summary = await db.transactions.aggregate(tx_pipeline).to_list(20)
+    
+    # User activity
+    new_users = await db.users.count_documents(query)
+    
+    # Artwork stats
+    new_artworks = await db.artworks.count_documents(query)
+    purchased_artworks = await db.artworks.count_documents({**query, "is_purchased": True})
+    
+    return {
+        "period": {"start": start_date, "end": end_date},
+        "transactions": tx_summary,
+        "new_users": new_users,
+        "new_artworks": new_artworks,
+        "purchased_artworks": purchased_artworks
+    }
+
+@api_router.get("/admin/export/transactions")
+async def admin_export_transactions(request: Request, format: str = "csv"):
+    """Export transactions as CSV - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
+    transactions = await db.transactions.find({}, {"_id": 0}).sort("created_at", -1).to_list(10000)
+    
+    if format == "csv":
+        output = io.StringIO()
+        if transactions:
+            writer = csv.DictWriter(output, fieldnames=transactions[0].keys())
+            writer.writeheader()
+            for tx in transactions:
+                # Convert datetime to string
+                tx_copy = {k: (v.isoformat() if isinstance(v, datetime) else v) for k, v in tx.items()}
+                writer.writerow(tx_copy)
+        
+        return Response(
+            content=output.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=transactions.csv"}
+        )
+    else:
+        # JSON format
+        for tx in transactions:
+            for k, v in tx.items():
+                if isinstance(v, datetime):
+                    tx[k] = v.isoformat()
+        return Response(
+            content=json.dumps(transactions, indent=2),
+            media_type="application/json",
+            headers={"Content-Disposition": "attachment; filename=transactions.json"}
+        )
+
+@api_router.get("/admin/export/users")
+async def admin_export_users(request: Request, format: str = "csv"):
+    """Export users as CSV - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0}).sort("created_at", -1).to_list(10000)
+    
+    if format == "csv":
+        output = io.StringIO()
+        if users:
+            writer = csv.DictWriter(output, fieldnames=users[0].keys())
+            writer.writeheader()
+            for user in users:
+                user_copy = {k: (v.isoformat() if isinstance(v, datetime) else v) for k, v in user.items()}
+                writer.writerow(user_copy)
+        
+        return Response(
+            content=output.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=users.csv"}
+        )
+    else:
+        for user in users:
+            for k, v in user.items():
+                if isinstance(v, datetime):
+                    user[k] = v.isoformat()
+        return Response(
+            content=json.dumps(users, indent=2),
+            media_type="application/json",
+            headers={"Content-Disposition": "attachment; filename=users.json"}
+        )
+
+@api_router.get("/admin/export/artworks")
+async def admin_export_artworks(request: Request, format: str = "csv"):
+    """Export artworks as CSV - FOUNDER ONLY"""
+    await get_founder_admin(request)
+    
+    artworks = await db.artworks.find({}, {"_id": 0}).sort("created_at", -1).to_list(10000)
+    
+    if format == "csv":
+        output = io.StringIO()
+        if artworks:
+            # Flatten tags for CSV
+            for art in artworks:
+                art["tags"] = ",".join(art.get("tags", []))
+            writer = csv.DictWriter(output, fieldnames=artworks[0].keys())
+            writer.writeheader()
+            for art in artworks:
+                art_copy = {k: (v.isoformat() if isinstance(v, datetime) else v) for k, v in art.items()}
+                writer.writerow(art_copy)
+        
+        return Response(
+            content=output.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment; filename=artworks.csv"}
+        )
+    else:
+        for art in artworks:
+            for k, v in art.items():
+                if isinstance(v, datetime):
+                    art[k] = v.isoformat()
+        return Response(
+            content=json.dumps(artworks, indent=2),
+            media_type="application/json",
+            headers={"Content-Disposition": "attachment; filename=artworks.json"}
+        )
 
 # ==================== SEED DATA ENDPOINT ====================
 
