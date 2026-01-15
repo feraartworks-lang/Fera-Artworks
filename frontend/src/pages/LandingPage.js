@@ -136,7 +136,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              Why Choose ArtChain?
+              Why Choose Ferâ?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               We've reimagined digital art ownership with security, flexibility, and transparency at the core.
@@ -279,7 +279,7 @@ const LandingPage = () => {
             Ready to Start Your Collection?
           </h2>
           <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-            Join thousands of collectors who trust ArtChain for secure, 
+            Join thousands of collectors who trust Ferâ for secure, 
             transparent digital art ownership.
           </p>
           <Link to="/register">
