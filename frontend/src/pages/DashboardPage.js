@@ -42,6 +42,15 @@ const DashboardPage = () => {
   const [withdrawDestination, setWithdrawDestination] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
+  
+  // Bank info state
+  const [bankInfo, setBankInfo] = useState({
+    iban: '',
+    bank_name: '',
+    account_holder_name: '',
+    swift_bic: ''
+  });
+  const [isSavingBank, setIsSavingBank] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
