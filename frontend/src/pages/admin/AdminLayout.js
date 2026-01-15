@@ -87,7 +87,7 @@ const AdminLayout = () => {
             <Shield className="w-5 h-5 text-red-500" />
           </div>
           <div>
-            <h1 className="font-serif font-bold text-lg">ArtChain Admin</h1>
+            <h1 className="font-serif font-bold text-lg">Ferâ Admin</h1>
             <p className="text-xs text-zinc-500">Founder Control Panel</p>
           </div>
         </div>

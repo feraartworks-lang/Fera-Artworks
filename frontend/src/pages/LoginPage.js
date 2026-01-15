@@ -96,7 +96,7 @@ const LoginPage = () => {
               <span className="font-serif font-bold text-primary-foreground text-xl">A</span>
             </div>
             <CardTitle className="font-serif text-2xl">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your ArtChain account</CardDescription>
+            <CardDescription>Sign in to your Ferâ account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Email Login Form */}

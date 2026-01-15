@@ -71,7 +71,7 @@ const AdminLoginPage = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="founder@artchain.com"
+                    placeholder="fera.artworks@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 bg-black border-zinc-800 text-white"
