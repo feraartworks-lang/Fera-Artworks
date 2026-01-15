@@ -206,6 +206,18 @@ class BankInfoUpdate(BaseModel):
     account_holder_name: Optional[str] = None
     swift_bic: Optional[str] = None
 
+class TwoFactorSetup(BaseModel):
+    password: str
+
+class TwoFactorVerify(BaseModel):
+    code: str
+
+class AdminLoginWith2FA(BaseModel):
+    email: EmailStr
+    password: str
+    admin_secret: str
+    totp_code: Optional[str] = None
+
 # ==================== HELPER FUNCTIONS ====================
 
 def generate_id(prefix: str = "") -> str:
