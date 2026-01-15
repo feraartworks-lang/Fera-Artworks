@@ -75,10 +75,6 @@ const Navbar = () => {
                     <LayoutDashboard className="w-4 h-4 mr-2" />
                     Dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/admin')} data-testid="admin-menu-item">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Admin Panel
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <div className="px-2 py-1.5">
                     <p className="text-xs text-muted-foreground">Balance</p>
