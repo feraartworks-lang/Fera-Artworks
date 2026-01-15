@@ -75,6 +75,62 @@ const LoginPage = () => {
     }
   };
 
+  const handleWalletConnectLogin = async () => {
+    setIsWalletConnectLoading(true);
+
+    try {
+      // Initialize WalletConnect provider
+      const wcProvider = await EthereumProvider.init({
+        projectId: 'b820d127537d485abf9fe7e448e47fe7', // Public project ID for demo
+        chains: [1], // Ethereum mainnet
+        showQrModal: true,
+        optionalChains: [137, 56, 42161], // Polygon, BSC, Arbitrum
+        metadata: {
+          name: 'Ferâ',
+          description: 'Digital Art Ownership Platform',
+          url: window.location.origin,
+          icons: [`${window.location.origin}/favicon.ico`]
+        }
+      });
+
+      // Connect and get accounts
+      await wcProvider.connect();
+      const accounts = wcProvider.accounts;
+      
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found');
+      }
+
+      const address = accounts[0];
+
+      // Request nonce from backend
+      const { nonce, message } = await requestWeb3Nonce(address);
+
+      // Sign message with WalletConnect
+      const signature = await wcProvider.request({
+        method: 'personal_sign',
+        params: [message, address]
+      });
+
+      // Verify and login
+      await loginWithWeb3(address, signature, nonce);
+      toast.success('WalletConnect connected successfully!');
+      navigate(from, { replace: true });
+
+      // Disconnect after successful login (we store the address in our system)
+      await wcProvider.disconnect();
+    } catch (error) {
+      console.error('WalletConnect login error:', error);
+      if (error.message?.includes('User rejected')) {
+        toast.error('Connection rejected by user');
+      } else {
+        toast.error(error.response?.data?.detail || 'WalletConnect failed');
+      }
+    } finally {
+      setIsWalletConnectLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4" data-testid="login-page">
       {/* Background */}
