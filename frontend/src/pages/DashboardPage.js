@@ -519,6 +519,131 @@ const DashboardPage = () => {
                 </div>
               )}
             </TabsContent>
+
+            {/* Settings Tab */}
+            <TabsContent value="settings">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Bank Information Card */}
+                <Card className="card-glass">
+                  <CardHeader>
+                    <CardTitle className="font-serif text-xl flex items-center gap-2">
+                      <Building2 className="w-5 h-5 text-primary" />
+                      Bank Information
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Add your bank details for withdrawals and refunds
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="account_holder">Account Holder Name</Label>
+                      <Input
+                        id="account_holder"
+                        placeholder="Full name as on bank account"
+                        value={bankInfo.account_holder_name}
+                        onChange={(e) => setBankInfo({...bankInfo, account_holder_name: e.target.value})}
+                        className="input-dark"
+                        data-testid="input-account-holder"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="iban">IBAN</Label>
+                      <Input
+                        id="iban"
+                        placeholder="TR00 0000 0000 0000 0000 0000 00"
+                        value={bankInfo.iban}
+                        onChange={(e) => setBankInfo({...bankInfo, iban: e.target.value.toUpperCase()})}
+                        className="input-dark font-mono"
+                        data-testid="input-iban"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="bank_name">Bank Name</Label>
+                      <Input
+                        id="bank_name"
+                        placeholder="e.g., Ziraat Bankası"
+                        value={bankInfo.bank_name}
+                        onChange={(e) => setBankInfo({...bankInfo, bank_name: e.target.value})}
+                        className="input-dark"
+                        data-testid="input-bank-name"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="swift_bic">SWIFT/BIC Code</Label>
+                      <Input
+                        id="swift_bic"
+                        placeholder="e.g., TCZBTR2A"
+                        value={bankInfo.swift_bic}
+                        onChange={(e) => setBankInfo({...bankInfo, swift_bic: e.target.value.toUpperCase()})}
+                        className="input-dark font-mono"
+                        data-testid="input-swift"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleSaveBankInfo}
+                      disabled={isSavingBank}
+                      className="w-full btn-primary"
+                      data-testid="save-bank-info-btn"
+                    >
+                      {isSavingBank ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                      ) : (
+                        <><Save className="w-4 h-4 mr-2" /> Save Bank Information</>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Wallet Card */}
+                <Card className="card-glass">
+                  <CardHeader>
+                    <CardTitle className="font-serif text-xl flex items-center gap-2">
+                      <Wallet className="w-5 h-5 text-neon-purple" />
+                      Crypto Wallet
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Connect your wallet for crypto payments and withdrawals
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    {user?.wallet_address ? (
+                      <div className="space-y-4">
+                        <div className="p-4 bg-muted/30 rounded-lg border border-neon-purple/30">
+                          <p className="text-xs text-muted-foreground mb-1">Connected Wallet</p>
+                          <p className="font-mono text-sm text-foreground break-all">
+                            {user.wallet_address}
+                          </p>
+                        </div>
+                        <Button 
+                          variant="outline"
+                          onClick={() => copyToClipboard(user.wallet_address)}
+                          className="w-full"
+                        >
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copy Address
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Wallet className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground mb-4">No wallet connected</p>
+                        <Button 
+                          onClick={handleConnectWallet}
+                          disabled={isConnectingWallet}
+                          className="btn-secondary"
+                        >
+                          {isConnectingWallet ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Connecting...</>
+                          ) : (
+                            <><Wallet className="w-4 h-4 mr-2" /> Connect MetaMask</>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </main>
