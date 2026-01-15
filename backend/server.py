@@ -152,6 +152,52 @@ class TransactionResponse(BaseModel):
     created_at: datetime
     details: Dict[str, Any] = {}
 
+# ==================== ADMIN MODELS ====================
+
+class AdminLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+    admin_secret: str  # Extra security layer
+
+class AdminArtworkCreate(BaseModel):
+    title: str
+    description: str
+    price: float
+    artist_name: str
+    category: str = "digital"
+    tags: str = ""  # Comma-separated
+
+class AdminArtworkUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    artist_name: Optional[str] = None
+    category: Optional[str] = None
+    tags: Optional[str] = None
+
+class AdminUserAction(BaseModel):
+    user_id: str
+    action: str  # "ban", "suspend", "unban", "unsuspend"
+    reason: Optional[str] = None
+    duration_days: Optional[int] = None  # For suspend
+
+class AdminManualRefund(BaseModel):
+    artwork_id: str
+    user_id: str
+    reason: str
+
+class AdminManualTransfer(BaseModel):
+    artwork_id: str
+    from_user_id: str
+    to_user_id: str
+    reason: str
+
+class AlertCreate(BaseModel):
+    type: str  # "error", "warning", "info", "critical"
+    title: str
+    message: str
+    source: str  # "system", "user", "transaction", "security"
+
 # ==================== HELPER FUNCTIONS ====================
 
 def generate_id(prefix: str = "") -> str:
