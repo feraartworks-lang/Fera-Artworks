@@ -26,6 +26,7 @@ import AdminTransactions from "@/pages/admin/AdminTransactions";
 import AdminAuditLogs from "@/pages/admin/AdminAuditLogs";
 import AdminAlerts from "@/pages/admin/AdminAlerts";
 import AdminReports from "@/pages/admin/AdminReports";
+import AdminSettings from "@/pages/admin/AdminSettings";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
