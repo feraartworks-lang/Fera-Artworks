@@ -1122,6 +1122,47 @@ async def withdraw_funds(withdrawal: WithdrawalRequest, request: Request):
         "net_amount": net_amount
     }
 
+# ==================== USER BANK INFO ENDPOINTS ====================
+
+@api_router.get("/user/bank-info")
+async def get_user_bank_info(request: Request):
+    """Get user's bank information"""
+    user = await get_current_user(request)
+    bank_info = {
+        "iban": user.get("iban"),
+        "bank_name": user.get("bank_name"),
+        "account_holder_name": user.get("account_holder_name"),
+        "swift_bic": user.get("swift_bic")
+    }
+    return bank_info
+
+@api_router.put("/user/bank-info")
+async def update_user_bank_info(bank_data: BankInfoUpdate, request: Request):
+    """Update user's bank information for refunds/payouts"""
+    user = await get_current_user(request)
+    
+    update_fields = {}
+    if bank_data.iban is not None:
+        update_fields["iban"] = bank_data.iban
+    if bank_data.bank_name is not None:
+        update_fields["bank_name"] = bank_data.bank_name
+    if bank_data.account_holder_name is not None:
+        update_fields["account_holder_name"] = bank_data.account_holder_name
+    if bank_data.swift_bic is not None:
+        update_fields["swift_bic"] = bank_data.swift_bic
+    
+    if update_fields:
+        await db.users.update_one(
+            {"user_id": user["user_id"]},
+            {"$set": update_fields}
+        )
+        
+        await create_audit_log("bank_info_updated", user["user_id"], {
+            "fields_updated": list(update_fields.keys())
+        })
+    
+    return {"message": "Bank information updated successfully"}
+
 # ==================== USER DASHBOARD ENDPOINTS ====================
 
 @api_router.get("/user/artworks")
