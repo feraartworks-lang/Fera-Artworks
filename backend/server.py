@@ -299,6 +299,45 @@ async def set_audit_logs_expiration(artwork_id: str):
         {"$set": {"expires_at": expires_at}}
     )
 
+async def get_founder_admin(request: Request) -> dict:
+    """
+    Verify that the request is from the FOUNDER ADMIN.
+    Only ONE admin exists - the founder.
+    """
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Admin authentication required")
+    
+    token = auth_header.split(" ")[1]
+    payload = verify_jwt_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired admin token")
+    
+    # Check if this is the founder admin
+    user = await db.users.find_one({"user_id": payload["sub"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not user.get("is_founder_admin"):
+        raise HTTPException(status_code=403, detail="Access denied. Only the founder admin can access this resource.")
+    
+    return user
+
+async def create_system_alert(alert_type: str, title: str, message: str, source: str, details: dict = None):
+    """Create a system alert for admin notification"""
+    alert = {
+        "alert_id": generate_id("alert_"),
+        "type": alert_type,  # critical, error, warning, info
+        "title": title,
+        "message": message,
+        "source": source,
+        "details": details or {},
+        "is_read": False,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.admin_alerts.insert_one(alert)
+    return alert
+
 # ==================== AUTH ENDPOINTS ====================
 
 @api_router.post("/auth/register", response_model=TokenResponse)
