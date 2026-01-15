@@ -21,6 +21,8 @@ import base64
 import io
 import csv
 import json
+import pyotp
+import qrcode
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
