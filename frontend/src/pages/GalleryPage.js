@@ -39,7 +39,7 @@ const GalleryPage = () => {
       try {
         await axios.post(`${API}/seed`);
       } catch (error) {
-        console.log('Seed might have already run');
+        // Seed already exists, continue
       }
       fetchArtworks();
     };
