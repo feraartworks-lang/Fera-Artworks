@@ -1336,13 +1336,20 @@ async def get_payment_order(order_id: str, request: Request):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
-    # Check if expired
-    if order["status"] == "PENDING_PAYMENT" and datetime.now(timezone.utc) > order["expires_at"]:
-        await db.payment_orders.update_one(
-            {"order_id": order_id},
-            {"$set": {"status": "EXPIRED", "cancelled_at": datetime.now(timezone.utc)}}
-        )
-        order["status"] = "EXPIRED"
+    # Check if expired - handle timezone-naive datetimes from MongoDB
+    if order["status"] == "PENDING_PAYMENT":
+        expires_at = order["expires_at"]
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        
+        if datetime.now(timezone.utc) > expires_at:
+            await db.payment_orders.update_one(
+                {"order_id": order_id},
+                {"$set": {"status": "EXPIRED", "cancelled_at": datetime.now(timezone.utc)}}
+            )
+            order["status"] = "EXPIRED"
     
     return order
 
