@@ -231,6 +231,8 @@ class PlatformBankAccount(BaseModel):
 class PaymentOrderCreate(BaseModel):
     """Create a new payment order for artwork purchase"""
     artwork_id: str
+    payment_method: str = "bank_transfer"  # "bank_transfer" or "usdt"
+    crypto_network: Optional[str] = None  # "trc20", "erc20", "bep20"
 
 class PaymentOrderStatus(BaseModel):
     """Payment order status update"""
