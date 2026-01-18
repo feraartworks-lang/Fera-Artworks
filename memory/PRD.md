@@ -4,7 +4,7 @@
 Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for unique digital artwork license-based ownership, transfer, resale and refund. The system defines artworks as ownership licenses (not files) and ensures security, traceability and value transfer.
 
 ## Deployment Status: ✅ PRODUCTION READY
-- Preview URL: https://digiartlicense.preview.emergentagent.com
+- Preview URL: https://digital-art-hub-1.preview.emergentagent.com
 - Last Updated: January 15, 2026
 
 ## User Personas

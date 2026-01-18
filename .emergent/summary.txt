@@ -1,84 +1,83 @@
 <analysis>**original_problem_statement:**
-The user wants to build a global platform for the ownership, transfer, resale, and return of unique digital artworks. The core concept is that ownership is based on a license, not a file.
+The user wants to build a global platform called Ferâ for the ownership, transfer, resale, and return of unique digital artworks based on a license-based ownership model.
 
 **PRODUCT REQUIREMENTS:**
-- **License-Based Ownership:** A digital artwork is defined by a license. Only the license holder can access the original, un-watermarked version.
-- **Single Global Ownership:** Each artwork is unique and has only one owner at a time.
-- **Secure Viewer:** After purchase, users access the artwork through a secure, account-bound viewer that prevents downloading and sharing.
-- **Full-Resolution Download:** Users can choose to download the original file. This action is irreversible, marks the artwork as , and permanently disables the right to return or resell it on the platform.
-- **Artwork State Machine:** Artworks have immutable flags: , , , .
-- **P2P Resale:** Users can resell artworks they own, provided . The seller sets the price (must be at least 1% higher than purchase price), and the platform takes a 1% commission.
-- **Lifetime Returns:** Users can return an artwork for a refund at any time, provided it is not used () or transferred (). The 5% License Protection Fee is non-refundable.
+- **License-Based Ownership:** Ownership is defined by a license, granting exclusive access to the un-watermarked artwork.
+- **Single Global Ownership:** Each artwork is unique with one owner at a time.
+- **Secure Viewer & Irreversible Download:** Purchased art is accessed via a secure viewer. Downloading the original file is an irreversible action () that voids return/resale rights.
+- **P2P Resale & Lifetime Returns:** Users can resell or return artworks if .
 - **Financial Model:**
-    - Initial Purchase: Artwork price + 5% non-refundable License Protection Fee.
-    - P2P Sale: Platform takes a 1% commission.
-    - Withdrawal: Users can withdraw P2P sales earnings, with a 1% withdrawal fee.
-- **Payment Methods:** Bank transfer, Open Banking (A2A), and Crypto (Web3 wallets).
-- **User Authentication:** Email/Password (JWT), Google Auth, and Web3 wallet (e.g., MetaMask).
-- **Admin Panel:** A comprehensive, secure panel for the founder to manage users, artworks, transactions, and view audit logs. The admin should be the only one who can add/delete artworks, block users, process manual transactions, and generate reports.
-- **Audit Logs:** All significant actions (purchase, download, transfer, refund) must be logged. These logs should be encrypted and retained for 3 days *after a refund is processed*, then automatically deleted.
+    - Initial Purchase: Price + 5% non-refundable fee.
+    - P2P Sale: 1% platform commission.
+    - Withdrawal: 1% withdrawal fee.
+- **Payment Methods:**
+    - **Account-to-Account (A2A):** A custom, Stripe-free system for bank transfers (SEPA, SWIFT) based on unique payment reference codes. This is the primary payment method.
+    - **Crypto:** USDT (ERC20) payments, reconciled manually using the same reference code system.
+- **User Authentication:** Email/Password (JWT), Google Auth, and Web3 wallet (MetaMask, WalletConnect).
+- **Admin Panel:** A comprehensive, secure panel for the founder to manage the platform, including users, artworks, manual transaction reconciliation (A2A and Crypto), and security settings (2FA).
+- **Audit Logs:** All significant actions are logged with a time-to-live (TTL) index for automatic data deletion after refunds.
 
 **User's preferred language**: Türkçe (Turkish)
 
 **what currently exists?**
-A full-stack application with a FastAPI backend and a React frontend has been developed. The core functionalities such as user authentication (JWT, Google, Web3), artwork browsing, purchasing, and the initial version of the P2P marketplace are implemented. A comprehensive, secure admin panel has been built with authentication restricted to a single founder admin defined in the environment variables. The admin panel includes dashboards for statistics and management pages for artworks, users, transactions, and audit logs. The audit log system correctly implements the 3-day data retention policy after a refund.
+A full-stack application (FastAPI + React) with a complete feature set. User authentication (JWT, Google, MetaMask, WalletConnect) is functional. The platform has a fully operational, secure admin panel with 2FA (TOTP) security. The core payment system has been custom-built to be **Stripe-free**, relying on an Account-to-Account (A2A) bank transfer flow and a newly added USDT (ERC20) crypto payment flow. Both systems use unique reference codes for manual reconciliation via the admin panel. The P2P marketplace page is temporarily disabled with a Coming Soon overlay as requested.
 
 **Last working item**:
-    - Last item agent was working: The user asked how to log into the admin panel and pointed out that sensitive user information like IBAN/bank account details (for refunds/payouts) was missing. The agent provided login instructions and acknowledged the need to add the financial details to the admin panel.
-    - Status: NOT STARTED
+    - Last item agent was working: Implementing the USDT (ERC20) payment option. The backend was updated to generate USDT payment orders with a unique reference code, and the frontend checkout page was modified to allow users to select between Bank Transfer and USDT.
+    - Status: IN PROGRESS
     - Agent Testing Done: N
     - Which testing method agent to use? both
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  Issue 1: Admin panel does not show user's IBAN/bank account information (P0)
+  Issue 1: The USDT payment flow has been implemented but not fully tested end-to-end. (P0)
 
   Issues Detail:
   - Issue 1:
-     - Attempted fixes: None. The agent only acknowledged the request.
+     - Attempted fixes: The agent implemented the code for both backend and frontend. However, testing was blocked by a login issue due to a database change. The agent was in the process of resetting the user password to proceed with testing.
      - Next debug checklist:
-        - **Backend ():**
-            - Update the  model in the database schema to include fields for bank/IBAN information.
-            - Create a secure endpoint for users to add/update their bank details.
-            - Update the admin endpoint for fetching user details () to include this new information.
-        - **Frontend ():**
-            - Update the user management table in the admin panel to display the bank/IBAN information.
-            - Ensure this sensitive information is displayed securely and only to the authenticated admin.
-     - Why fix this issue and what will be achieved with the fix? The admin needs this information to process manual refunds and payouts via bank transfer, which is a core requirement of the financial model.
-     - Status:  NOT STARTED
+        1. Ensure a test user can log in. If not, reset the password via the backend script.
+        2. As the user, navigate to an artwork, click purchase, and select Pay with USDT on the checkout page.
+        3. Verify the correct USDT amount, wallet address, and unique payment reference are displayed.
+        4. As the admin, navigate to the A2A Payments page and use the Record Crypto Transaction feature to simulate a successful payment using the transaction hash and reference code.
+        5. Verify the artwork ownership is transferred to the user and the order status updates to .
+        6. Check the user's dashboard to confirm they now own the artwork.
+     - Why fix this issue and what will be achieved with the fix? This is a critical feature request from the user to enable crypto payments. Completing this will finalize the payment systems.
+     - Status:  IN PROGRESS
      - Is recurring issue? N
      - Should Test frontend/backend/both after fix? both
      - Blocked on other issue: None
 
 **In progress Task List**:
-  - Task 1: Complete the implementation of the comprehensive admin panel (P0)
+  - Task 1: Finalize and verify the USDT payment integration (P0)
 
  Task Detail:
   - Task 1:
-     - Where to resume: While the backend endpoints and frontend pages for most admin features have been created, the UI components need to be connected to the backend APIs to make them functional. The agent should start by connecting the UI for the features listed below.
-     - What will be achieved with this? A fully functional, secure admin panel that meets all user requirements, allowing the founder to manage the entire platform.
+     - Where to resume: The agent was attempting to test the flow but was blocked by a login issue. The immediate next step is to log in as a test user and proceed with the testing checklist outlined in Issue 1.
+     - What will be achieved with this? A fully functional and verified crypto payment option for users.
      - Status: IN PROGRESS
      - Should Test frontend/backend/both after fix? both
      - Blocked on something: None
 
 **Upcoming and Future Tasks**
     Upcoming Tasks:
-    - **P0: User Suspension/Blocking UI ():** Connect the Suspend / Unsuspend buttons in the admin users table to the backend API ().
-    - **P0: Artwork Add/Edit/Delete UI ():** Implement the modals and forms for adding, editing, and deleting artworks, and connect them to the respective backend APIs ().
-    - **P1: Manual Transactions UI:** Create a UI in the admin panel for the founder to manually process refunds or transfers and connect it to the backend APIs (, ).
-    - **P1: Reporting and CSV/Excel Export ():** Implement the UI for generating and exporting reports (e.g., financial summaries, user lists) as CSV/Excel files. This will require creating new backend endpoints to format and deliver the data.
-    - **P1: Admin Notification System ( and ):** Connect the alerts UI to the backend to display real-time notifications for critical events. Implement the backend logic to trigger these alerts (e.g., large withdrawals, failed payments).
+    - **P1: Automate Payment Reconciliation:**
+        - **Bank (A2A):** Implement a cron job or webhook system to automatically reconcile incoming bank transfers by parsing statement files (CSV) or integrating with an Open Banking API to match payments using the unique reference code.
+        - **Crypto (USDT):** Implement a blockchain listener to monitor the platform's USDT wallet for incoming transactions that match an order's amount and reference, automatically confirming the payment.
+    - **P2: Re-enable P2P Marketplace:** Remove the Coming Soon overlay on the marketplace page and integrate the existing A2A and USDT payment flows for P2P sales and seller payouts.
+
+    Future Tasks:
+    - **Email Notification System:** Integrate a service like SendGrid or Resend to send transactional emails (e.g., order confirmations, payment received, password resets).
+    - **Legal Pages:** Create and add Privacy Policy and Terms of Service pages to the application.
 
 **Completed work in this session**
-- **Platform Foundation:** Full-stack app with FastAPI backend and React/Shadcn frontend.
-- **User Authentication:** Implemented JWT (email/password), Google social login, and Web3 (MetaMask) wallet authentication.
-- **Artwork Lifecycle:** Created backend models and logic to manage artwork states (, , , etc.).
-- **Core User Journeys:** Developed the complete flows for purchasing artworks, listing them on the P2P marketplace, and requesting refunds.
-- **Audit Log System:** Implemented an immutable audit log for all critical actions with a time-to-live (TTL) index in MongoDB to automatically delete logs 3 days after a refund is processed.
-- **Secure Admin Panel:**
-    - Created a dedicated, secure admin area accessible only to a founder admin whose credentials are set in  variables ().
-    - Built backend endpoints for all requested admin functionalities: dashboard stats, user management (including status changes), artwork management, transaction viewing, manual operations, and alert creation.
-    - Developed the complete frontend structure for the admin panel, including pages for Dashboard, Artworks, Users, Transactions, Audit Logs, Alerts, and Reports.
+- **A2A & USDT Payment System:** Designed and implemented a custom, Stripe-free payment system for both Account-to-Account (A2A) bank transfers and USDT (ERC20) crypto payments, based on manual reconciliation via the admin panel.
+- **Admin Panel 2FA:** Implemented a full Two-Factor Authentication (TOTP) system for the admin account, including QR code setup and verification.
+- **WalletConnect Integration:** Added WalletConnect as a third Web3 login option alongside MetaMask.
+- **Platform Rebranding:** Renamed the entire platform from ArtChain to Ferâ, including updating the admin email and removing hardcoded credentials from .
+- **Marketplace Coming Soon Page:** Temporarily disabled the live marketplace by adding a full-screen blur overlay with a custom message, as requested.
+- **IBAN/Bank Info Feature:** Implemented functionality for users to add their bank details and for the admin to view them.
+- **Production Readiness:** Hardened security by rotating secrets, cleaned the  file, and fixed an N+1 query in the backend.
 
 **Earlier issues found/mentioned but not fixed**
    - None.
@@ -90,82 +89,84 @@ A full-stack application with a FastAPI backend and a React frontend has been de
 
 
 **Key Technical Concepts**
-- **Backend:** FastAPI, MongoDB (with  for async operations)
+- **Backend:** FastAPI, MongoDB ()
 - **Frontend:** React, React Router, Tailwind CSS, Shadcn/UI
-- **Authentication:** JWT, Google OAuth 2.0, Web3 (MetaMask) signature verification
-- **Database:** MongoDB with TTL index for expiring audit logs.
+- **Authentication:** JWT, Google OAuth, Web3 (MetaMask/WalletConnect signature verification), Admin 2FA (TOTP with )
+- **Payments:** Custom-built A2A (bank transfer) and USDT (ERC20) flows with manual reconciliation.
 
 **key DB schema**
   - **users**: 
   - **artworks**: 
   - **transactions**: 
   - **audit_logs**: 
-
-**changes in tech stack**
-  - None.
+  - **payment_orders**: 
 
 **All files of reference**
-- : Contains the entire backend logic, including all API endpoints, database models, and business rules. Was significantly updated to add the secure admin panel.
-- : Updated to include  and  for the admin panel.
-- : Updated to include the new  routes.
-- : New file to manage admin authentication state.
-- : New directory containing all pages for the new admin panel (, , , etc.).
-- : Created and updated to document project requirements and progress.
+- : Heavily modified to include A2A/USDT payment logic, order creation, manual reconciliation endpoints, and Admin 2FA.
+- : Updated with platform wallet addresses and new secrets.
+- : New file created for the unified A2A and USDT checkout experience.
+- : New file created for the admin to view payment orders and manually reconcile them.
+- : New file for managing Admin 2FA.
+- : Overhauled to support the 2FA flow.
+- : Updated with 2FA logic.
+- : Buy button updated to redirect to the new checkout page.
+- : Modified to show a Coming Soon overlay.
+- : Updated to include WalletConnect login.
+- : Routes added for the new checkout and admin pages.
 
 **Areas that need refactoring**:
-- The old admin page () and its corresponding route are now obsolete and should be removed to avoid confusion.
+- None identified. The obsolete  was already removed.
 
 **key api endpoints**
-- : User authentication endpoints.
-- : Public endpoints for listing and viewing artworks.
-- : Endpoints for authenticated user actions (purchase, resell, refund, view owned art).
-- : Admin login endpoint.
-- : Secure endpoints for managing the platform.
+- : Creates a new payment order (for bank or crypto).
+- : Retrieves the status of a payment order.
+- : Lists all payment orders for the admin.
+- : Admin endpoint to manually confirm a bank transfer.
+- : Admin endpoint to manually confirm a USDT transfer.
+- , , : Endpoints for managing admin two-factor authentication.
 
 **Critical Info for New Agent**
-- **Admin Access:** The admin panel is restricted to a single founder. Credentials (, ) and the JWT secret are defined in . The login URL is .
-- **Data Retention Policy:** A critical user requirement is that audit logs related to a transaction are automatically deleted 3 days *after a refund is processed*. This is implemented in  using a MongoDB TTL index on the  field in the  collection. Do not alter this logic.
-- **In-Progress Admin Panel:** The user has requested a comprehensive admin panel. While the backend endpoints and frontend page skeletons are mostly in place, the primary task is to connect the UI components to the APIs to make them functional.
+- **Stripe is GONE:** The entire payment system is custom-built and Stripe-free. Do not re-introduce Stripe. Payments are handled via A2A bank transfers or USDT, both requiring manual admin confirmation.
+- **Admin 2FA:** The 2FA system is implemented but is **disabled by default**. It must be activated from the admin Security page.
+- **Admin Credentials:** The admin email is . The password was recently reset to  for testing purposes.
+- **Web3 for Auth Only:** MetaMask and WalletConnect are used for user authentication (identity verification via signature), **not** for on-chain payments directly from the wallet.
 
 **documents and test reports created in this job**
-  - 
-  - 
-  - 
+  -  (updated)
   - 
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests to add several features to the admin panel: Audit Log UI, role system (only one admin), admin-only artwork management, user blocking, manual transactions, reporting/export, and a notification system. Emphasizes the need for a fully-featured and secure UI. (IN PROGRESS)
-2.  **User:** Asks how to log into the admin panel and if it shows user IBAN/bank details. (PENDING - IBAN details are missing)
-3.  **User:** Asks for a list of all features in the admin panel.
-4.  **User:** Acknowledges that the audit log system is working correctly.
-5.  **Agent:** Confirms the audit log system is working and suggests future enhancements.
-6.  **User:** Requests clarification on the audit log data retention policy. Specifically, that data should be kept for 3 days *after a refund*, not after a purchase. (RESOLVED)
-7.  **Agent:** Provides the  summary, marking the MVP as complete.
-8.  **User:** Provides positive feedback on the Admin Dashboard UI.
-9.  **User:** Provides positive feedback on the Admin login page.
-10. **User:** Provides positive feedback on the Marketplace page UI.
+1.  **User:** Asks for a deployment to-do list.
+2.  **Agent:** Provides a detailed list covering domain, payments, legal, and marketing.
+3.  **User:** Requests to implement the A2A (bank transfer) payment system, providing detailed technical requirements.
+4.  **Agent:** Confirms understanding and starts implementation.
+5.  **User:** Asks if Stripe is now completely removed.
+6.  **Agent:** Confirms Stripe is gone and the platform relies only on A2A and Web3 auth.
+7.  **User:** Asks if Admin 2FA is active.
+8.  **Agent:** Explains it's implemented but needs to be enabled manually by the admin.
+9.  **User:** Expresses confusion about why MetaMask/WalletConnect plugins aren't on the site yet.
+10. **Agent:** Clarifies that the integrations are already coded and the buttons are on the login page, explaining how they work.
+11. **User:** Requests to add USDT as a payment method with the same rules. (IN PROGRESS)
 
 **Project Health Check:**
-- **Functional:** Core user features (auth, browse, purchase, refund) and the secure admin panel foundation are complete and working.
-- **Mocked:** No mocked components.
-- **Broken:** The new admin panel pages are not fully functional as the UI is not yet connected to all the backend APIs.
+- **Functional:** Core application, user journeys, and admin panel are fully functional.
+- **Mocked:** None.
+- **Broken:** The USDT payment flow is not yet verified.
 
 **3rd Party Integrations**
-- Google Auth: Uses  for user login via Google accounts. Managed via backend logic.
-- MetaMask (Web3): For user authentication via wallet signature. Does not require a specific key.
+- Google Auth: For user login.
+- MetaMask: For Web3 wallet authentication.
+- WalletConnect: For Web3 wallet authentication.
 
 **Testing status**
-  - Testing agent used after significant changes: YES (one time, after initial build)
+  - Testing agent used after significant changes: YES, after the IBAN feature.
   - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: []
+  - Test files created: A test file was created by the testing agent at .
   - Known regressions: []
 
 **Credentials to test flow:**
 - **Admin Email:** 
-- **Admin Secret:** 
-- (Password is set on first login, but for testing, use a known value or check the code if a default is seeded).
-*These values are stored in  and can be viewed if needed.*
+- **Admin Password:**  (for testing)
 
 **What agent forgot to execute**
-- The agent did not implement the display of user IBAN/bank account information in the admin panel, which was the user's last explicit request.
-- While the agent created backend endpoints and frontend page files for the advanced admin features (user blocking, manual transfers, reports export, etc.), it did not connect the frontend UI to these backend APIs, leaving the features non-functional.</analysis>
+- The agent did not complete the end-to-end testing of the newly implemented USDT payment feature. The workflow was interrupted by a login failure which the agent was actively trying to resolve.</analysis>
