@@ -98,6 +98,7 @@ function AppRouter() {
         <Route path="alerts" element={<AdminAlerts />} />
         <Route path="reports" element={<AdminReports />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="payments" element={<AdminPayments />} />
       </Route>
       
       {/* Fallback */}
