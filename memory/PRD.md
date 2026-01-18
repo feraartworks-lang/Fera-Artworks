@@ -101,19 +101,20 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 
 ## Prioritized Backlog
 
-### P0 (Critical - Next Sprint)
-- [ ] Payment gateway integration (Stripe/Open Banking)
-- [ ] File upload with watermarking
-- [ ] Email notifications for critical alerts
+### P0 (Critical - Completed ✅)
+- [x] ~~Payment gateway integration~~ → Replaced with custom A2A bank transfer + USDT crypto
+- [x] Admin 2FA (TOTP) support
 
-### P1 (High Priority)
-- [ ] Two-factor authentication for admin
-- [ ] Real-time dashboard updates (WebSocket)
-- [ ] Backup and disaster recovery
+### P1 (High Priority - Next Sprint)
+- [ ] Automated payment reconciliation (bank statement parsing, blockchain listener)
+- [ ] Re-enable P2P Marketplace with A2A/USDT payments
+- [ ] File upload with watermarking
 
 ### P2 (Medium Priority)
+- [ ] Email notifications (SendGrid/Resend integration)
+- [ ] Real-time dashboard updates (WebSocket)
+- [ ] Privacy Policy and Terms of Service pages
 - [ ] Advanced analytics dashboard
-- [ ] Scheduled reports via email
 - [ ] Mobile app (React Native)
 
 ## Next Tasks
