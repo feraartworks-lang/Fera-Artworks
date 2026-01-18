@@ -79,6 +79,11 @@ function AppRouter() {
           <SecureViewerPage />
         </ProtectedRoute>
       } />
+      <Route path="/checkout/:artworkId" element={
+        <ProtectedRoute>
+          <BankTransferCheckout />
+        </ProtectedRoute>
+      } />
       
       {/* Admin Routes - Separate authentication */}
       <Route path="/admin/login" element={<AdminLoginPage />} />
