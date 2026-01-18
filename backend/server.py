@@ -258,6 +258,13 @@ class RefundRequest(BaseModel):
 def generate_id(prefix: str = "") -> str:
     return f"{prefix}{uuid.uuid4().hex[:12]}"
 
+def generate_payment_reference() -> str:
+    """Generate unique payment reference: FERA-YYYY-XXXXXX"""
+    year = datetime.now().year
+    random_part = secrets.token_hex(3).upper()  # 6 hex characters
+    sequence = secrets.randbelow(1000000)
+    return f"FERA-{year}-{sequence:06d}-{random_part}"
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
