@@ -27,7 +27,13 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - **Founder-only admin panel with full control**
 - **Admin 2FA (TOTP) support**
 
-## What's Been Implemented (January 15, 2026)
+## What's Been Implemented (January 18, 2026)
+
+### Payment Systems - STRIPE-FREE ✅
+- ✅ **Account-to-Account (A2A) Bank Transfer**: Custom payment system with unique reference codes for SEPA/SWIFT transfers
+- ✅ **USDT Crypto Payments**: Support for TRC-20 (Tron), ERC-20 (Ethereum), BEP-20 (BSC) networks
+- ✅ **Manual Reconciliation**: Admin can record incoming bank/crypto transactions and auto-match by reference code
+- ✅ **Order Management**: Create, view, confirm, and cancel payment orders
 
 ### Backend (FastAPI + MongoDB)
 - ✅ User authentication (Email/Password, Google OAuth, Web3/MetaMask, WalletConnect)
