@@ -52,6 +52,9 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - ✅ **System alerts and notifications**
 - ✅ **CSV/JSON data export**
 - ✅ **User bank info (IBAN, Bank Name, Account Holder, SWIFT/BIC) storage and retrieval**
+- ✅ **Payment order system with A2A bank transfer support**
+- ✅ **USDT crypto payment endpoints (TRC-20, ERC-20, BEP-20)**
+- ✅ **Admin crypto transaction recording and auto-matching**
 
 ### Frontend (React + Shadcn UI + Tailwind)
 - ✅ Landing page with dark gallery theme
