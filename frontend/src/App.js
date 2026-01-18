@@ -15,6 +15,7 @@ import SecureViewerPage from "@/pages/SecureViewerPage";
 import DashboardPage from "@/pages/DashboardPage";
 import MarketplacePage from "@/pages/MarketplacePage";
 import AuthCallback from "@/pages/AuthCallback";
+import BankTransferCheckout from "@/pages/BankTransferCheckout";
 
 // Admin Pages
 import AdminLoginPage from "@/pages/admin/AdminLoginPage";
