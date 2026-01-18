@@ -249,6 +249,16 @@ class BankTransactionRecord(BaseModel):
     transaction_date: datetime
     bank_statement_id: Optional[str] = None
 
+class CryptoTransactionRecord(BaseModel):
+    """Record incoming crypto transaction for reconciliation"""
+    tx_hash: str
+    amount: float
+    currency: str = "USDT"
+    network: str  # "trc20", "erc20", "bep20"
+    sender_wallet: str
+    reference: str  # From memo/note field
+    confirmations: int = 0
+
 class RefundRequest(BaseModel):
     """Admin-initiated refund request"""
     order_id: str
