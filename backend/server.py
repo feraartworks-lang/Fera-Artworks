@@ -1277,8 +1277,26 @@ async def create_payment_order(order_data: PaymentOrderCreate, request: Request)
         "order_id": order_id,
         "reference": reference,
         "artwork_id": artwork["artwork_id"],
-        "amount": total_amount
+        "amount": total_amount,
+        "payment_method": order_data.payment_method
     })
+    
+    # Build response based on payment method
+    if order_data.payment_method == "usdt":
+        instructions = {
+            "step1": f"Send exactly {total_amount:.2f} USDT to the wallet address below",
+            "step2": f"Include this reference in memo/note: {reference}",
+            "step3": "Payment will be confirmed after blockchain confirmations",
+            "important": "Reference code MUST be included in transaction memo/note",
+            "network": f"Send on {payment_details['network']} network ONLY"
+        }
+    else:
+        instructions = {
+            "step1": f"Transfer exactly €{total_amount:.2f} to the bank account below",
+            "step2": f"Use reference code: {reference}",
+            "step3": "Payment will be automatically detected within 1-24 hours",
+            "important": "Reference code MUST be included in transfer description"
+        }
     
     return {
         "order_id": order_id,
@@ -1286,16 +1304,13 @@ async def create_payment_order(order_data: PaymentOrderCreate, request: Request)
         "artwork_price": artwork_price,
         "license_fee": license_fee,
         "total_amount": total_amount,
-        "currency": "EUR",
-        "bank_details": PLATFORM_BANK,
+        "currency": currency,
+        "payment_method": order_data.payment_method,
+        "crypto_network": crypto_network,
+        "payment_details": payment_details,
         "expires_at": order_doc["expires_at"].isoformat(),
         "status": "PENDING_PAYMENT",
-        "instructions": {
-            "step1": f"Transfer exactly €{total_amount:.2f} to the bank account below",
-            "step2": f"Use reference code: {reference}",
-            "step3": "Payment will be automatically detected within 1-24 hours",
-            "important": "Reference code MUST be included in transfer description"
-        }
+        "instructions": instructions
     }
 
 @api_router.get("/payment/order/{order_id}")
