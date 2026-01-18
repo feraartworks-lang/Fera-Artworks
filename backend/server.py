@@ -1400,6 +1400,7 @@ async def admin_record_bank_transaction(transaction: BankTransactionRecord, requ
     # Store transaction
     tx_doc = {
         "transaction_id": transaction.transaction_id,
+        "type": "bank_transfer",
         "amount": transaction.amount,
         "currency": transaction.currency,
         "sender_name": transaction.sender_name,
@@ -1416,14 +1417,62 @@ async def admin_record_bank_transaction(transaction: BankTransactionRecord, requ
     await db.bank_transactions.insert_one(tx_doc)
     
     # Attempt automatic matching
-    match_result = await match_transaction_to_order(transaction.reference, transaction.amount)
+    match_result = await match_transaction_to_order(transaction.reference, transaction.amount, "EUR")
     
     return {
         "transaction_id": transaction.transaction_id,
         "match_result": match_result
     }
 
-async def match_transaction_to_order(reference: str, amount: float):
+@api_router.post("/admin/payment/record-crypto-transaction")
+async def admin_record_crypto_transaction(transaction: CryptoTransactionRecord, request: Request):
+    """
+    Admin: Record incoming USDT crypto transaction for reconciliation.
+    """
+    admin = await get_founder_admin(request)
+    
+    # Validate network
+    if transaction.network not in ["trc20", "erc20", "bep20"]:
+        raise HTTPException(status_code=400, detail="Invalid network")
+    
+    # Store transaction
+    tx_doc = {
+        "transaction_id": transaction.tx_hash,
+        "type": "crypto",
+        "tx_hash": transaction.tx_hash,
+        "amount": transaction.amount,
+        "currency": transaction.currency,
+        "network": transaction.network,
+        "sender_wallet": transaction.sender_wallet,
+        "reference": transaction.reference.strip().upper(),
+        "confirmations": transaction.confirmations,
+        "recorded_at": datetime.now(timezone.utc),
+        "recorded_by": admin["user_id"],
+        "matched": False,
+        "matched_order_id": None
+    }
+    
+    await db.crypto_transactions.insert_one(tx_doc)
+    
+    # Attempt automatic matching
+    match_result = await match_transaction_to_order(transaction.reference, transaction.amount, "USDT")
+    
+    if match_result.get("matched"):
+        # Update order with tx_hash
+        await db.payment_orders.update_one(
+            {"order_id": match_result["order_id"]},
+            {"$set": {
+                "tx_hash": transaction.tx_hash,
+                "sender_wallet": transaction.sender_wallet
+            }}
+        )
+    
+    return {
+        "tx_hash": transaction.tx_hash,
+        "match_result": match_result
+    }
+
+async def match_transaction_to_order(reference: str, amount: float, currency: str = "EUR"):
     """
     Automatic payment matching logic.
     Reference is the PRIMARY KEY for reconciliation.
