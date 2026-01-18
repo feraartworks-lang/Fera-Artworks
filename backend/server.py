@@ -218,6 +218,41 @@ class AdminLoginWith2FA(BaseModel):
     admin_secret: str
     totp_code: Optional[str] = None
 
+# ==================== A2A PAYMENT MODELS ====================
+
+class PlatformBankAccount(BaseModel):
+    """Platform's bank account for receiving payments"""
+    iban: str
+    bank_name: str
+    account_holder: str
+    swift_bic: str
+    currency: str = "EUR"
+
+class PaymentOrderCreate(BaseModel):
+    """Create a new payment order for artwork purchase"""
+    artwork_id: str
+
+class PaymentOrderStatus(BaseModel):
+    """Payment order status update"""
+    status: str  # PENDING_PAYMENT, PAYMENT_RECEIVED, CONFIRMED, DELIVERED, CANCELLED, REFUNDED
+
+class BankTransactionRecord(BaseModel):
+    """Record incoming bank transaction for reconciliation"""
+    transaction_id: str
+    amount: float
+    currency: str
+    sender_name: str
+    sender_iban: Optional[str] = None
+    reference: str
+    transaction_date: datetime
+    bank_statement_id: Optional[str] = None
+
+class RefundRequest(BaseModel):
+    """Admin-initiated refund request"""
+    order_id: str
+    reason: str
+    refund_amount: Optional[float] = None  # Full refund if None
+
 # ==================== HELPER FUNCTIONS ====================
 
 def generate_id(prefix: str = "") -> str:
