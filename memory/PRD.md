@@ -118,11 +118,12 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - [ ] Mobile app (React Native)
 
 ## Next Tasks
-1. Integrate real payment processing (Stripe + Crypto)
-2. Implement watermark generation for previews
-3. Add 2FA for admin panel
-4. Build email notification system for alerts
+1. Automate payment reconciliation (bank CSV parsing, blockchain listener for USDT)
+2. Re-enable P2P Marketplace with new payment flows
+3. Implement watermark generation for previews
+4. Build email notification system (SendGrid/Resend)
 5. Add artwork upload functionality for artists
+6. Create Privacy Policy and Terms of Service pages
 
 ## Tech Stack
 - Backend: FastAPI + MongoDB (Motor async driver)
