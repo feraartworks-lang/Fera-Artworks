@@ -1130,6 +1130,525 @@ async def request_refund(refund: RefundRequest, request: Request):
         "note": "License protection fee (5%) is non-refundable"
     }
 
+# ==================== A2A PAYMENT SYSTEM ====================
+
+# Platform Bank Account Configuration (would be in .env in production)
+PLATFORM_BANK = {
+    "iban": "TR33 0006 1005 1978 6457 8413 26",
+    "bank_name": "Ziraat Bankası",
+    "account_holder": "Ferâ Digital Art Ltd.",
+    "swift_bic": "TCZBTR2A",
+    "currency": "EUR"
+}
+
+@api_router.get("/payment/bank-details")
+async def get_platform_bank_details():
+    """Get platform's bank account details for payment"""
+    return PLATFORM_BANK
+
+@api_router.post("/payment/create-order")
+async def create_payment_order(order_data: PaymentOrderCreate, request: Request):
+    """
+    Create a payment order for artwork purchase.
+    Returns unique reference code for bank transfer.
+    """
+    user = await get_current_user(request)
+    
+    # Get artwork
+    artwork = await db.artworks.find_one({"artwork_id": order_data.artwork_id}, {"_id": 0})
+    if not artwork:
+        raise HTTPException(status_code=404, detail="Artwork not found")
+    
+    if artwork.get("is_purchased"):
+        raise HTTPException(status_code=400, detail="Artwork already sold")
+    
+    # Check for existing pending order for same artwork by same user
+    existing_order = await db.payment_orders.find_one({
+        "artwork_id": order_data.artwork_id,
+        "buyer_id": user["user_id"],
+        "status": "PENDING_PAYMENT"
+    })
+    
+    if existing_order:
+        # Return existing order
+        return {
+            "order_id": existing_order["order_id"],
+            "reference": existing_order["reference"],
+            "amount": existing_order["total_amount"],
+            "currency": existing_order["currency"],
+            "bank_details": PLATFORM_BANK,
+            "expires_at": existing_order["expires_at"],
+            "status": existing_order["status"],
+            "message": "Existing order found"
+        }
+    
+    # Calculate amounts
+    artwork_price = artwork["price"]
+    license_fee = artwork_price * 0.05  # 5% license protection fee
+    total_amount = artwork_price + license_fee
+    
+    # Generate unique reference
+    reference = generate_payment_reference()
+    
+    # Create order
+    order_id = generate_id("ord_")
+    order_doc = {
+        "order_id": order_id,
+        "reference": reference,  # CRITICAL: Unique payment reference
+        "buyer_id": user["user_id"],
+        "buyer_email": user["email"],
+        "buyer_name": user.get("name", ""),
+        "artwork_id": artwork["artwork_id"],
+        "artwork_title": artwork["title"],
+        "artwork_price": artwork_price,
+        "license_fee": license_fee,
+        "total_amount": total_amount,
+        "currency": "EUR",
+        "status": "PENDING_PAYMENT",
+        "payment_method": "bank_transfer",
+        "bank_details": PLATFORM_BANK,
+        "created_at": datetime.now(timezone.utc),
+        "expires_at": datetime.now(timezone.utc) + timedelta(hours=72),  # 72 hour payment window
+        "payment_received_at": None,
+        "confirmed_at": None,
+        "delivered_at": None,
+        "cancelled_at": None,
+        "refunded_at": None,
+        "matched_transaction_id": None,
+        "notes": []
+    }
+    
+    await db.payment_orders.insert_one(order_doc)
+    
+    # Create audit log
+    await create_audit_log("payment_order_created", user["user_id"], {
+        "order_id": order_id,
+        "reference": reference,
+        "artwork_id": artwork["artwork_id"],
+        "amount": total_amount
+    })
+    
+    return {
+        "order_id": order_id,
+        "reference": reference,
+        "artwork_price": artwork_price,
+        "license_fee": license_fee,
+        "total_amount": total_amount,
+        "currency": "EUR",
+        "bank_details": PLATFORM_BANK,
+        "expires_at": order_doc["expires_at"].isoformat(),
+        "status": "PENDING_PAYMENT",
+        "instructions": {
+            "step1": f"Transfer exactly €{total_amount:.2f} to the bank account below",
+            "step2": f"Use reference code: {reference}",
+            "step3": "Payment will be automatically detected within 1-24 hours",
+            "important": "Reference code MUST be included in transfer description"
+        }
+    }
+
+@api_router.get("/payment/order/{order_id}")
+async def get_payment_order(order_id: str, request: Request):
+    """Get payment order details and status"""
+    user = await get_current_user(request)
+    
+    order = await db.payment_orders.find_one({
+        "order_id": order_id,
+        "buyer_id": user["user_id"]
+    }, {"_id": 0})
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Check if expired
+    if order["status"] == "PENDING_PAYMENT" and datetime.now(timezone.utc) > order["expires_at"]:
+        await db.payment_orders.update_one(
+            {"order_id": order_id},
+            {"$set": {"status": "EXPIRED", "cancelled_at": datetime.now(timezone.utc)}}
+        )
+        order["status"] = "EXPIRED"
+    
+    return order
+
+@api_router.get("/payment/my-orders")
+async def get_my_payment_orders(request: Request):
+    """Get all payment orders for current user"""
+    user = await get_current_user(request)
+    
+    orders = await db.payment_orders.find(
+        {"buyer_id": user["user_id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return orders
+
+@api_router.post("/payment/cancel-order/{order_id}")
+async def cancel_payment_order(order_id: str, request: Request):
+    """Cancel a pending payment order"""
+    user = await get_current_user(request)
+    
+    order = await db.payment_orders.find_one({
+        "order_id": order_id,
+        "buyer_id": user["user_id"],
+        "status": "PENDING_PAYMENT"
+    })
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found or cannot be cancelled")
+    
+    await db.payment_orders.update_one(
+        {"order_id": order_id},
+        {"$set": {
+            "status": "CANCELLED",
+            "cancelled_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    await create_audit_log("payment_order_cancelled", user["user_id"], {
+        "order_id": order_id,
+        "reference": order["reference"]
+    })
+    
+    return {"message": "Order cancelled", "order_id": order_id}
+
+# ==================== ADMIN PAYMENT RECONCILIATION ====================
+
+@api_router.post("/admin/payment/record-transaction")
+async def admin_record_bank_transaction(transaction: BankTransactionRecord, request: Request):
+    """
+    Admin: Record incoming bank transaction for reconciliation.
+    This can be automated via bank API/webhook or manual entry.
+    """
+    admin = await get_founder_admin(request)
+    
+    # Store transaction
+    tx_doc = {
+        "transaction_id": transaction.transaction_id,
+        "amount": transaction.amount,
+        "currency": transaction.currency,
+        "sender_name": transaction.sender_name,
+        "sender_iban": transaction.sender_iban,
+        "reference": transaction.reference.strip().upper(),
+        "transaction_date": transaction.transaction_date,
+        "bank_statement_id": transaction.bank_statement_id,
+        "recorded_at": datetime.now(timezone.utc),
+        "recorded_by": admin["user_id"],
+        "matched": False,
+        "matched_order_id": None
+    }
+    
+    await db.bank_transactions.insert_one(tx_doc)
+    
+    # Attempt automatic matching
+    match_result = await match_transaction_to_order(transaction.reference, transaction.amount)
+    
+    return {
+        "transaction_id": transaction.transaction_id,
+        "match_result": match_result
+    }
+
+async def match_transaction_to_order(reference: str, amount: float):
+    """
+    Automatic payment matching logic.
+    Reference is the PRIMARY KEY for reconciliation.
+    """
+    # Normalize reference
+    ref_normalized = reference.strip().upper().replace(" ", "").replace("-", "")
+    
+    # Find order by reference (exact match)
+    order = await db.payment_orders.find_one({
+        "status": "PENDING_PAYMENT"
+    })
+    
+    # Try to match by reference pattern
+    orders = await db.payment_orders.find({
+        "status": "PENDING_PAYMENT"
+    }).to_list(1000)
+    
+    matched_order = None
+    for order in orders:
+        order_ref = order["reference"].upper().replace(" ", "").replace("-", "")
+        if order_ref in ref_normalized or ref_normalized in order_ref:
+            matched_order = order
+            break
+    
+    if not matched_order:
+        return {
+            "matched": False,
+            "reason": "NO_MATCHING_REFERENCE",
+            "suggestion": "Manual review required - reference not found"
+        }
+    
+    # Check amount (with 1% tolerance for bank fees)
+    expected = matched_order["total_amount"]
+    tolerance = expected * 0.01
+    
+    if amount < expected - tolerance:
+        return {
+            "matched": False,
+            "reason": "UNDERPAYMENT",
+            "order_id": matched_order["order_id"],
+            "expected": expected,
+            "received": amount,
+            "difference": expected - amount
+        }
+    
+    if amount > expected + tolerance:
+        return {
+            "matched": True,
+            "warning": "OVERPAYMENT",
+            "order_id": matched_order["order_id"],
+            "expected": expected,
+            "received": amount,
+            "overpayment": amount - expected
+        }
+    
+    # Perfect match - auto confirm
+    await db.payment_orders.update_one(
+        {"order_id": matched_order["order_id"]},
+        {"$set": {
+            "status": "PAYMENT_RECEIVED",
+            "payment_received_at": datetime.now(timezone.utc),
+            "matched_transaction_id": reference
+        }}
+    )
+    
+    await db.bank_transactions.update_one(
+        {"reference": reference},
+        {"$set": {
+            "matched": True,
+            "matched_order_id": matched_order["order_id"]
+        }}
+    )
+    
+    # Create alert for admin
+    await create_system_alert(
+        "info",
+        "Payment Matched",
+        f"Payment of €{amount:.2f} matched to order {matched_order['order_id']}",
+        "transaction"
+    )
+    
+    return {
+        "matched": True,
+        "order_id": matched_order["order_id"],
+        "status": "PAYMENT_RECEIVED",
+        "next_step": "Confirm and deliver artwork"
+    }
+
+@api_router.post("/admin/payment/confirm-order/{order_id}")
+async def admin_confirm_payment_order(order_id: str, request: Request):
+    """Admin: Confirm payment received and deliver artwork"""
+    admin = await get_founder_admin(request)
+    
+    order = await db.payment_orders.find_one({"order_id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if order["status"] not in ["PENDING_PAYMENT", "PAYMENT_RECEIVED"]:
+        raise HTTPException(status_code=400, detail=f"Order cannot be confirmed (status: {order['status']})")
+    
+    # Update order
+    await db.payment_orders.update_one(
+        {"order_id": order_id},
+        {"$set": {
+            "status": "CONFIRMED",
+            "confirmed_at": datetime.now(timezone.utc),
+            "confirmed_by": admin["user_id"]
+        }}
+    )
+    
+    # Transfer artwork ownership
+    artwork = await db.artworks.find_one({"artwork_id": order["artwork_id"]})
+    if artwork:
+        await db.artworks.update_one(
+            {"artwork_id": order["artwork_id"]},
+            {"$set": {
+                "is_purchased": True,
+                "owner_id": order["buyer_id"],
+                "purchased_at": datetime.now(timezone.utc),
+                "purchase_price": order["artwork_price"]
+            }}
+        )
+    
+    # Mark as delivered
+    await db.payment_orders.update_one(
+        {"order_id": order_id},
+        {"$set": {
+            "status": "DELIVERED",
+            "delivered_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    # Create transaction record
+    tx_id = generate_id("tx_")
+    await db.transactions.insert_one({
+        "transaction_id": tx_id,
+        "type": "purchase_a2a",
+        "user_id": order["buyer_id"],
+        "artwork_id": order["artwork_id"],
+        "amount": order["total_amount"],
+        "fee": order["license_fee"],
+        "payment_method": "bank_transfer",
+        "payment_reference": order["reference"],
+        "status": "completed",
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    await create_audit_log("payment_confirmed_delivered", admin["user_id"], {
+        "order_id": order_id,
+        "artwork_id": order["artwork_id"],
+        "buyer_id": order["buyer_id"],
+        "amount": order["total_amount"]
+    })
+    
+    return {
+        "message": "Payment confirmed and artwork delivered",
+        "order_id": order_id,
+        "status": "DELIVERED"
+    }
+
+@api_router.get("/admin/payment/pending-orders")
+async def admin_get_pending_orders(request: Request):
+    """Admin: Get all pending payment orders"""
+    await get_founder_admin(request)
+    
+    orders = await db.payment_orders.find(
+        {"status": {"$in": ["PENDING_PAYMENT", "PAYMENT_RECEIVED"]}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return orders
+
+@api_router.get("/admin/payment/all-orders")
+async def admin_get_all_orders(request: Request, status: Optional[str] = None):
+    """Admin: Get all payment orders with optional status filter"""
+    await get_founder_admin(request)
+    
+    query = {}
+    if status:
+        query["status"] = status
+    
+    orders = await db.payment_orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return orders
+
+@api_router.get("/admin/payment/unmatched-transactions")
+async def admin_get_unmatched_transactions(request: Request):
+    """Admin: Get bank transactions that couldn't be matched"""
+    await get_founder_admin(request)
+    
+    transactions = await db.bank_transactions.find(
+        {"matched": False},
+        {"_id": 0}
+    ).sort("recorded_at", -1).to_list(100)
+    
+    return transactions
+
+@api_router.post("/admin/payment/manual-match")
+async def admin_manual_match_transaction(
+    transaction_id: str,
+    order_id: str,
+    request: Request
+):
+    """Admin: Manually match a transaction to an order"""
+    admin = await get_founder_admin(request)
+    
+    # Update transaction
+    await db.bank_transactions.update_one(
+        {"transaction_id": transaction_id},
+        {"$set": {
+            "matched": True,
+            "matched_order_id": order_id,
+            "manual_match_by": admin["user_id"],
+            "manual_match_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    # Update order
+    await db.payment_orders.update_one(
+        {"order_id": order_id},
+        {"$set": {
+            "status": "PAYMENT_RECEIVED",
+            "payment_received_at": datetime.now(timezone.utc),
+            "matched_transaction_id": transaction_id
+        }}
+    )
+    
+    await create_audit_log("manual_payment_match", admin["user_id"], {
+        "transaction_id": transaction_id,
+        "order_id": order_id
+    })
+    
+    return {"message": "Transaction manually matched", "order_id": order_id}
+
+@api_router.post("/admin/payment/refund")
+async def admin_process_a2a_refund(refund: RefundRequest, request: Request):
+    """
+    Admin: Process refund for A2A payment.
+    Refunds are SELLER-CONTROLLED only.
+    """
+    admin = await get_founder_admin(request)
+    
+    order = await db.payment_orders.find_one({"order_id": refund.order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if order["status"] not in ["DELIVERED", "CONFIRMED", "PAYMENT_RECEIVED"]:
+        raise HTTPException(status_code=400, detail="Order cannot be refunded")
+    
+    # Calculate refund amount (license fee is NON-REFUNDABLE)
+    refund_amount = refund.refund_amount or order["artwork_price"]  # Exclude license fee
+    
+    # Get buyer's bank info
+    buyer = await db.users.find_one({"user_id": order["buyer_id"]}, {"_id": 0})
+    buyer_iban = buyer.get("iban") if buyer else None
+    
+    # Update order
+    await db.payment_orders.update_one(
+        {"order_id": refund.order_id},
+        {
+            "$set": {
+                "status": "REFUNDED",
+                "refunded_at": datetime.now(timezone.utc),
+                "refund_amount": refund_amount,
+                "refund_reason": refund.reason,
+                "refunded_by": admin["user_id"]
+            },
+            "$push": {
+                "notes": {
+                    "type": "refund",
+                    "message": f"Refund of €{refund_amount:.2f} initiated. Reason: {refund.reason}",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "by": admin["user_id"]
+                }
+            }
+        }
+    )
+    
+    # Revert artwork ownership
+    await db.artworks.update_one(
+        {"artwork_id": order["artwork_id"]},
+        {"$set": {
+            "is_purchased": False,
+            "owner_id": None,
+            "is_refunded": True
+        }}
+    )
+    
+    await create_audit_log("a2a_refund_processed", admin["user_id"], {
+        "order_id": refund.order_id,
+        "refund_amount": refund_amount,
+        "reason": refund.reason
+    })
+    
+    return {
+        "message": "Refund initiated",
+        "order_id": refund.order_id,
+        "refund_amount": refund_amount,
+        "buyer_iban": buyer_iban,
+        "note": "Please process bank transfer manually to buyer's account",
+        "non_refundable_fee": order["license_fee"]
+    }
+
 # ==================== WITHDRAWAL ENDPOINTS ====================
 
 @api_router.post("/withdraw")
