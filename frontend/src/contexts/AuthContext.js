@@ -136,11 +136,14 @@ export const AuthProvider = ({ children }) => {
     setUser(prev => ({ ...prev, ...userData }));
   };
 
+  const isAuthenticated = !!user && !!token;
+
   return (
     <AuthContext.Provider value={{
       user,
       token,
       isLoading,
+      isAuthenticated,
       login,
       register,
       loginWithGoogle,
