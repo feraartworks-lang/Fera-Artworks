@@ -128,7 +128,7 @@ const PaymentCheckout = () => {
 
   const formatIBAN = (iban) => iban?.replace(/(.{4})/g, '$1 ').trim() || '';
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
