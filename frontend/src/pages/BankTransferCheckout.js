@@ -32,12 +32,15 @@ const PaymentCheckout = () => {
   const [cryptoNetwork, setCryptoNetwork] = useState('trc20');
 
   useEffect(() => {
+    // Wait for auth to finish loading
+    if (authLoading) return;
+    
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: `/checkout/${artworkId}` } } });
       return;
     }
     fetchArtwork();
-  }, [artworkId, isAuthenticated]);
+  }, [artworkId, isAuthenticated, authLoading]);
 
   const fetchArtwork = async () => {
     try {
