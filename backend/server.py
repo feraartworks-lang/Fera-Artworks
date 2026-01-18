@@ -1141,10 +1141,37 @@ PLATFORM_BANK = {
     "currency": "EUR"
 }
 
+# Platform Crypto Wallet Configuration for USDT
+PLATFORM_CRYPTO = {
+    "usdt_trc20": {
+        "network": "Tron (TRC-20)",
+        "address": "TYourTronUSDTAddressHere123456789",
+        "currency": "USDT",
+        "min_confirmations": 19
+    },
+    "usdt_erc20": {
+        "network": "Ethereum (ERC-20)",
+        "address": "0xYourEthereumUSDTAddressHere123456789",
+        "currency": "USDT",
+        "min_confirmations": 12
+    },
+    "usdt_bep20": {
+        "network": "BSC (BEP-20)",
+        "address": "0xYourBSCUSDTAddressHere123456789",
+        "currency": "USDT",
+        "min_confirmations": 15
+    }
+}
+
 @api_router.get("/payment/bank-details")
 async def get_platform_bank_details():
     """Get platform's bank account details for payment"""
     return PLATFORM_BANK
+
+@api_router.get("/payment/crypto-wallets")
+async def get_platform_crypto_wallets():
+    """Get platform's crypto wallet addresses for USDT payment"""
+    return PLATFORM_CRYPTO
 
 @api_router.post("/payment/create-order")
 async def create_payment_order(order_data: PaymentOrderCreate, request: Request):
