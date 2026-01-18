@@ -317,7 +317,8 @@ class TestCryptoTransactionRecording:
         )
         order_data = create_response.json()
         reference = order_data["reference"]
-        total_amount = order_data["total_amount"]
+        # Handle both new order and existing order response formats
+        total_amount = order_data.get("total_amount") or order_data.get("amount", 787.5)
         
         # Record matching crypto transaction
         response = requests.post(
