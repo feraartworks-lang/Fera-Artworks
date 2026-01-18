@@ -64,8 +64,11 @@ Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for uniqu
 - ✅ User Dashboard (collection, transactions, listings)
 - ✅ **User Dashboard Settings tab for bank info management**
 - ✅ P2P Marketplace (browse, list, buy)
-- ✅ Multi-auth support (Email, Google, MetaMask)
+- ✅ Multi-auth support (Email, Google, MetaMask, WalletConnect)
 - ✅ Responsive design with mobile support
+- ✅ **Checkout page with Bank Transfer and USDT payment options**
+- ✅ **USDT network selection (TRC-20, ERC-20, BEP-20)**
+- ✅ **Payment order status tracking with reference code display**
 
 ### Admin Panel Features (Founder Only) - FULLY COMPLETE ✅
 - ✅ **Secure login with triple authentication**
