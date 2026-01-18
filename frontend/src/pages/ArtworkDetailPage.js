@@ -298,11 +298,11 @@ const ArtworkDetailPage = () => {
                 {canPurchase && (
                   <Button 
                     className="w-full btn-primary h-14 text-base"
-                    onClick={() => setShowPurchaseDialog(true)}
+                    onClick={() => navigate(`/checkout/${id}`)}
                     data-testid="purchase-btn"
                   >
                     <ShoppingCart className="w-5 h-5 mr-2" />
-                    Purchase License
+                    Purchase via Bank Transfer
                   </Button>
                 )}
 
