@@ -63,6 +63,7 @@ const AdminLayout = () => {
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/artworks', icon: Image, label: 'Artworks' },
     { path: '/admin/users', icon: Users, label: 'Users' },
+    { path: '/admin/payments', icon: Clock, label: 'A2A Payments' },
     { path: '/admin/transactions', icon: Clock, label: 'Transactions' },
     { path: '/admin/audit-logs', icon: FileText, label: 'Audit Logs' },
     { path: '/admin/alerts', icon: Bell, label: 'Alerts', badge: alertCount },
