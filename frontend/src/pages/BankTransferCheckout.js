@@ -20,7 +20,7 @@ const API = process.env.REACT_APP_BACKEND_URL + '/api';
 const PaymentCheckout = () => {
   const { artworkId } = useParams();
   const navigate = useNavigate();
-  const { token, isAuthenticated } = useAuth();
+  const { token, isAuthenticated, isLoading: authLoading } = useAuth();
   
   const [artwork, setArtwork] = useState(null);
   const [order, setOrder] = useState(null);
