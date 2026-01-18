@@ -1179,9 +1179,16 @@ async def get_platform_crypto_wallets():
 async def create_payment_order(order_data: PaymentOrderCreate, request: Request):
     """
     Create a payment order for artwork purchase.
-    Returns unique reference code for bank transfer.
+    Supports bank transfer (EUR) and USDT crypto payments.
     """
     user = await get_current_user(request)
+    
+    # Validate payment method
+    if order_data.payment_method not in ["bank_transfer", "usdt"]:
+        raise HTTPException(status_code=400, detail="Invalid payment method")
+    
+    if order_data.payment_method == "usdt" and order_data.crypto_network not in ["trc20", "erc20", "bep20"]:
+        raise HTTPException(status_code=400, detail="Invalid crypto network. Use: trc20, erc20, or bep20")
     
     # Get artwork
     artwork = await db.artworks.find_one({"artwork_id": order_data.artwork_id}, {"_id": 0})
@@ -1200,12 +1207,14 @@ async def create_payment_order(order_data: PaymentOrderCreate, request: Request)
     
     if existing_order:
         # Return existing order
+        payment_details = PLATFORM_BANK if existing_order["payment_method"] == "bank_transfer" else PLATFORM_CRYPTO.get(f"usdt_{existing_order.get('crypto_network', 'trc20')}")
         return {
             "order_id": existing_order["order_id"],
             "reference": existing_order["reference"],
             "amount": existing_order["total_amount"],
             "currency": existing_order["currency"],
-            "bank_details": PLATFORM_BANK,
+            "payment_method": existing_order["payment_method"],
+            "payment_details": payment_details,
             "expires_at": existing_order["expires_at"],
             "status": existing_order["status"],
             "message": "Existing order found"
@@ -1219,23 +1228,35 @@ async def create_payment_order(order_data: PaymentOrderCreate, request: Request)
     # Generate unique reference
     reference = generate_payment_reference()
     
+    # Determine currency and payment details
+    if order_data.payment_method == "usdt":
+        currency = "USDT"
+        crypto_network = order_data.crypto_network or "trc20"
+        payment_details = PLATFORM_CRYPTO.get(f"usdt_{crypto_network}")
+    else:
+        currency = "EUR"
+        crypto_network = None
+        payment_details = PLATFORM_BANK
+    
     # Create order
     order_id = generate_id("ord_")
     order_doc = {
         "order_id": order_id,
-        "reference": reference,  # CRITICAL: Unique payment reference
+        "reference": reference,  # CRITICAL: Unique payment reference (use as memo/note in crypto)
         "buyer_id": user["user_id"],
         "buyer_email": user["email"],
         "buyer_name": user.get("name", ""),
+        "buyer_wallet": user.get("wallet_address"),
         "artwork_id": artwork["artwork_id"],
         "artwork_title": artwork["title"],
         "artwork_price": artwork_price,
         "license_fee": license_fee,
         "total_amount": total_amount,
-        "currency": "EUR",
+        "currency": currency,
         "status": "PENDING_PAYMENT",
-        "payment_method": "bank_transfer",
-        "bank_details": PLATFORM_BANK,
+        "payment_method": order_data.payment_method,
+        "crypto_network": crypto_network,
+        "payment_details": payment_details,
         "created_at": datetime.now(timezone.utc),
         "expires_at": datetime.now(timezone.utc) + timedelta(hours=72),  # 72 hour payment window
         "payment_received_at": None,
@@ -1244,6 +1265,8 @@ async def create_payment_order(order_data: PaymentOrderCreate, request: Request)
         "cancelled_at": None,
         "refunded_at": None,
         "matched_transaction_id": None,
+        "sender_wallet": None,  # For crypto payments
+        "tx_hash": None,  # Blockchain transaction hash
         "notes": []
     }
     
