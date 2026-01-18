@@ -902,23 +902,23 @@ async def purchase_artwork(purchase: PurchaseRequest, request: Request):
 
 @api_router.get("/marketplace")
 async def get_marketplace_listings():
-    listings = await db.marketplace_listings.find(
-        {"status": "active"},
-        {"_id": 0}
-    ).to_list(100)
+    # Use aggregation pipeline to avoid N+1 query problem
+    pipeline = [
+        {"$match": {"status": "active"}},
+        {"$lookup": {
+            "from": "artworks",
+            "localField": "artwork_id",
+            "foreignField": "artwork_id",
+            "as": "artwork_data"
+        }},
+        {"$unwind": {"path": "$artwork_data", "preserveNullAndEmptyArrays": False}},
+        {"$addFields": {"artwork": "$artwork_data"}},
+        {"$project": {"_id": 0, "artwork_data": 0, "artwork._id": 0}},
+        {"$limit": 100}
+    ]
     
-    # Enrich with artwork data
-    result = []
-    for listing in listings:
-        artwork = await db.artworks.find_one(
-            {"artwork_id": listing["artwork_id"]},
-            {"_id": 0}
-        )
-        if artwork:
-            listing["artwork"] = artwork
-            result.append(listing)
-    
-    return result
+    listings = await db.marketplace_listings.aggregate(pipeline).to_list(100)
+    return listings
 
 @api_router.post("/marketplace/list")
 async def list_for_sale(listing: ListForSaleRequest, request: Request):
