@@ -29,8 +29,8 @@ TEST_USER_PASSWORD = "Buyer123!"
 
 # Available artworks for testing
 AVAILABLE_ARTWORKS = {
-    "digital_cosmos": "art_3b5eecf5f0dc",  # €500
-    "golden_hour": "art_db1056a3b67e"       # €750
+    "digital_cosmos": "art_7f6babd83059",  # €500
+    "golden_hour": "art_aba362b33b98"       # €750
 }
 
 
