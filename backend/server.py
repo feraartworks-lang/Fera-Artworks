@@ -271,11 +271,11 @@ def generate_id(prefix: str = "") -> str:
     return f"{prefix}{uuid.uuid4().hex[:12]}"
 
 def generate_payment_reference() -> str:
-    """Generate unique payment reference: FERA-YYYY-XXXXXX"""
+    """Generate unique payment reference: IAG-YYYY-XXXXXX"""
     year = datetime.now().year
     random_part = secrets.token_hex(3).upper()  # 6 hex characters
     sequence = secrets.randbelow(1000000)
-    return f"FERA-{year}-{sequence:06d}-{random_part}"
+    return f"IAG-{year}-{sequence:06d}-{random_part}"
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
@@ -1148,7 +1148,7 @@ async def request_refund(refund: RefundRequest, request: Request):
 PLATFORM_BANK = {
     "iban": "TR33 0006 1005 1978 6457 8413 26",
     "bank_name": "Ziraat Bankası",
-    "account_holder": "Ferâ Digital Art Ltd.",
+    "account_holder": "Imperial Art Gallery Ltd.",
     "swift_bic": "TCZBTR2A",
     "currency": "EUR"
 }
@@ -2044,7 +2044,7 @@ async def setup_2fa(request: Request, data: TwoFactorSetup):
     totp = pyotp.TOTP(secret)
     
     # Generate QR code
-    provisioning_uri = totp.provisioning_uri(name=admin["email"], issuer_name="Ferâ Admin")
+    provisioning_uri = totp.provisioning_uri(name=admin["email"], issuer_name="Imperial Art Gallery Admin")
     
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(provisioning_uri)
