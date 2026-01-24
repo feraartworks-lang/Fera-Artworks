@@ -178,7 +178,7 @@ const MarketplacePage = () => {
           </p>
           <div className="mt-6 pt-6 border-t border-border">
             <p className="text-sm text-muted-foreground">
-              Ferâ Team
+              Imperial Art Gallery Team
             </p>
           </div>
         </div>

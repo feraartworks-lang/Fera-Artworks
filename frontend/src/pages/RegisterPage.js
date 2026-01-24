@@ -134,7 +134,7 @@ const RegisterPage = () => {
               <span className="font-serif font-bold text-primary-foreground text-xl">A</span>
             </div>
             <CardTitle className="font-serif text-2xl">Create Account</CardTitle>
-            <CardDescription>Join Ferâ and start collecting</CardDescription>
+            <CardDescription>Join Imperial Art Gallery and start collecting</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleEmailRegister} className="space-y-4">

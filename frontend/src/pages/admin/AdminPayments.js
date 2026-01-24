@@ -362,7 +362,7 @@ const AdminPayments = () => {
                 value={newTx.reference}
                 onChange={(e) => setNewTx({...newTx, reference: e.target.value})}
                 className="bg-black border-zinc-800 font-mono"
-                placeholder="FERA-2026-XXXXXX"
+                placeholder="IAG-2026-XXXXXX"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
