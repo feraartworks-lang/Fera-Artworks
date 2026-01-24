@@ -86,7 +86,7 @@ const LoginPage = () => {
         showQrModal: true,
         optionalChains: [137, 56, 42161], // Polygon, BSC, Arbitrum
         metadata: {
-          name: 'Ferâ',
+          name: 'Imperial Art Gallery',
           description: 'Digital Art Ownership Platform',
           url: window.location.origin,
           icons: [`${window.location.origin}/favicon.ico`]
@@ -154,7 +154,7 @@ const LoginPage = () => {
               <span className="font-serif font-bold text-primary-foreground text-xl">A</span>
             </div>
             <CardTitle className="font-serif text-2xl">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your Ferâ account</CardDescription>
+            <CardDescription>Sign in to your Imperial Art Gallery account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Email Login Form */}

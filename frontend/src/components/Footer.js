@@ -13,7 +13,7 @@ const Footer = () => {
                 <span className="font-serif font-bold text-primary-foreground text-lg">A</span>
               </div>
               <span className="font-serif text-xl font-bold text-foreground tracking-wider">
-                FERÂ
+                IMPERIAL ART GALLERY
               </span>
             </div>
             <p className="text-muted-foreground text-sm">
@@ -90,7 +90,7 @@ const Footer = () => {
 
         <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Ferâ. All rights reserved.
+            © {new Date().getFullYear()} Imperial Art Gallery. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <span className="text-muted-foreground text-xs font-mono">

@@ -91,7 +91,7 @@ const RegisterPage = () => {
         showQrModal: true,
         optionalChains: [137, 56, 42161],
         metadata: {
-          name: 'Ferâ',
+          name: 'Imperial Art Gallery',
           description: 'Digital Art Ownership Platform',
           url: window.location.origin,
           icons: [`${window.location.origin}/favicon.ico`]
