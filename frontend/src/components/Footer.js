@@ -36,9 +36,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-muted-foreground text-sm cursor-not-allowed">
+                <Link to="/how-it-works" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   How It Works
-                </span>
+                </Link>
               </li>
             </ul>
           </div>
