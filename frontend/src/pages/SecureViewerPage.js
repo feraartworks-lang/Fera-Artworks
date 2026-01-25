@@ -149,7 +149,12 @@ const SecureViewerPage = () => {
                 <h1 className="font-serif text-lg font-bold text-foreground">
                   {artwork?.title}
                 </h1>
-                <p className="text-xs text-muted-foreground">{artwork?.artist_name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-muted-foreground">{artwork?.artist_name}</p>
+                  {artwork?.license_id && (
+                    <span className="text-xs font-mono text-primary">• {artwork.license_id}</span>
+                  )}
+                </div>
               </div>
             </div>
             
