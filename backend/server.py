@@ -736,6 +736,7 @@ async def create_artwork(
 ):
     """Admin endpoint to create artwork (for demo purposes, no admin check)"""
     artwork_id = generate_id("art_")
+    license_id = generate_license_id()  # Immutable license ID
     
     # Save file
     file_ext = file.filename.split(".")[-1] if file.filename else "jpg"
@@ -754,6 +755,7 @@ async def create_artwork(
     
     artwork_doc = {
         "artwork_id": artwork_id,
+        "license_id": license_id,
         "title": title,
         "description": description,
         "price": price,
