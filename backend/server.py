@@ -105,6 +105,7 @@ class ArtworkCreate(BaseModel):
 
 class ArtworkResponse(BaseModel):
     artwork_id: str
+    license_id: str
     title: str
     description: str
     price: float
