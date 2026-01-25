@@ -228,6 +228,11 @@ const GalleryPage = () => {
                           {artwork.title}
                         </h3>
                         <p className="text-muted-foreground text-sm">{artwork.artist_name}</p>
+                        {artwork.license_id && (
+                          <p className="text-xs font-mono text-primary/70 mt-1 truncate" title={artwork.license_id}>
+                            {artwork.license_id}
+                          </p>
+                        )}
                         <div className="flex justify-between items-center mt-3">
                           <span className="font-mono text-primary text-lg">
                             ${artwork.price.toFixed(2)}
