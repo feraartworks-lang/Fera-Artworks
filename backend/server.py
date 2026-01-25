@@ -270,6 +270,13 @@ class RefundRequest(BaseModel):
 def generate_id(prefix: str = "") -> str:
     return f"{prefix}{uuid.uuid4().hex[:12]}"
 
+def generate_license_id() -> str:
+    """Generate unique, immutable license ID: LIC-XXXXX-XXXXX-XXXXX"""
+    part1 = secrets.token_hex(3).upper()  # 6 chars
+    part2 = secrets.token_hex(3).upper()  # 6 chars
+    part3 = secrets.token_hex(3).upper()  # 6 chars
+    return f"LIC-{part1}-{part2}-{part3}"
+
 def generate_payment_reference() -> str:
     """Generate unique payment reference: IAG-YYYY-XXXXXX"""
     year = datetime.now().year
