@@ -385,6 +385,11 @@ const DashboardPage = () => {
                             {artwork.title}
                           </h3>
                           <p className="text-muted-foreground text-sm">{artwork.artist_name}</p>
+                          {artwork.license_id && (
+                            <p className="text-xs text-primary font-mono mt-1 truncate" title={artwork.license_id}>
+                              {artwork.license_id}
+                            </p>
+                          )}
                           <div className="flex gap-2 mt-3">
                             {!artwork.is_used && (
                               <Link to={`/secure-view/${artwork.artwork_id}`} className="flex-1">
