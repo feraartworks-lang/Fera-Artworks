@@ -178,6 +178,14 @@ const PaymentCheckout = () => {
                         <p className="text-muted-foreground">{artwork.artist_name}</p>
                       </div>
                       <Separator />
+                      {/* License ID */}
+                      {artwork.license_id && (
+                        <div className="flex items-center justify-between p-2 bg-primary/10 rounded-lg">
+                          <span className="text-muted-foreground text-sm">License ID</span>
+                          <span className="font-mono text-xs text-primary font-bold">{artwork.license_id}</span>
+                        </div>
+                      )}
+                      <Separator />
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Price</span>
