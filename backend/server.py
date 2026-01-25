@@ -2813,6 +2813,7 @@ async def seed_demo_data():
         },
         {
             "artwork_id": generate_id("art_"),
+            "license_id": generate_license_id(),
             "title": "Data Stream",
             "description": "Visualizing the flow of digital information in an artistic representation.",
             "price": 180.00,
