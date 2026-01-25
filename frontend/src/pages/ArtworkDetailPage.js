@@ -257,6 +257,15 @@ const ArtworkDetailPage = () => {
 
               <p className="text-muted-foreground">{artwork.description}</p>
 
+              {/* License ID */}
+              <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/30 rounded-lg">
+                <Shield className="w-5 h-5 text-primary" />
+                <div>
+                  <span className="text-xs text-muted-foreground">License ID</span>
+                  <p className="font-mono text-sm text-primary font-bold">{artwork.license_id}</p>
+                </div>
+              </div>
+
               {artwork.tags?.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {artwork.tags.map(tag => (
