@@ -80,9 +80,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-muted-foreground text-sm cursor-not-allowed">
+                <Link to="/faq" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   FAQ
-                </span>
+                </Link>
               </li>
             </ul>
           </div>
