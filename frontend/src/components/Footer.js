@@ -75,9 +75,9 @@ const Footer = () => {
                 </span>
               </li>
               <li>
-                <span className="text-muted-foreground text-sm cursor-not-allowed">
+                <Link to="/contact" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   Contact Us
-                </span>
+                </Link>
               </li>
               <li>
                 <span className="text-muted-foreground text-sm cursor-not-allowed">
