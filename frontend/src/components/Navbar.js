@@ -140,6 +140,13 @@ const Navbar = () => {
             >
               Marketplace
             </Link>
+            <Link 
+              to="/how-it-works" 
+              className="block text-muted-foreground hover:text-foreground transition-colors text-sm uppercase tracking-widest py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              How It Works
+            </Link>
             
             {user ? (
               <>
