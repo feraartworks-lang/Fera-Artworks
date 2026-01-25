@@ -72,6 +72,7 @@ function AppRouter() {
       <Route path="/marketplace" element={<MarketplacePage />} />
       <Route path="/how-it-works" element={<HowItWorksPage />} />
       <Route path="/license-agreement" element={<LicenseAgreementPage />} />
+      <Route path="/contact" element={<ContactUsPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Protected Routes */}
