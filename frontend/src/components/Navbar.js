@@ -51,6 +51,13 @@ const Navbar = () => {
             >
               Marketplace
             </Link>
+            <Link 
+              to="/how-it-works" 
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm uppercase tracking-widest"
+              data-testid="how-it-works-link"
+            >
+              How It Works
+            </Link>
             
             {user ? (
               <DropdownMenu>
