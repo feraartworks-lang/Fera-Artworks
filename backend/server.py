@@ -2723,6 +2723,7 @@ async def seed_demo_data():
     demo_artworks = [
         {
             "artwork_id": generate_id("art_"),
+            "license_id": generate_license_id(),
             "title": "Neon Dreams",
             "description": "A mesmerizing digital artwork featuring vibrant neon colors and abstract geometric patterns.",
             "price": 250.00,
@@ -2740,6 +2741,7 @@ async def seed_demo_data():
         },
         {
             "artwork_id": generate_id("art_"),
+            "license_id": generate_license_id(),
             "title": "Digital Cosmos",
             "description": "Explore the infinite beauty of the digital universe through this stunning cosmic artwork.",
             "price": 500.00,
@@ -2757,6 +2759,7 @@ async def seed_demo_data():
         },
         {
             "artwork_id": generate_id("art_"),
+            "license_id": generate_license_id(),
             "title": "Golden Hour",
             "description": "A luxurious piece capturing the essence of golden light in digital form.",
             "price": 750.00,
@@ -2774,6 +2777,7 @@ async def seed_demo_data():
         },
         {
             "artwork_id": generate_id("art_"),
+            "license_id": generate_license_id(),
             "title": "Cyber Pulse",
             "description": "Feel the rhythm of the digital age with this pulsating cyberpunk masterpiece.",
             "price": 350.00,
@@ -2791,6 +2795,7 @@ async def seed_demo_data():
         },
         {
             "artwork_id": generate_id("art_"),
+            "license_id": generate_license_id(),
             "title": "Abstract Reality",
             "description": "Where reality meets imagination - a journey through abstract dimensions.",
             "price": 420.00,
