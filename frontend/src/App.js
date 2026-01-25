@@ -68,6 +68,7 @@ function AppRouter() {
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/artwork/:id" element={<ArtworkDetailPage />} />
       <Route path="/marketplace" element={<MarketplacePage />} />
+      <Route path="/how-it-works" element={<HowItWorksPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Protected Routes */}
