@@ -18,6 +18,7 @@ import AuthCallback from "@/pages/AuthCallback";
 import BankTransferCheckout from "@/pages/BankTransferCheckout";
 import HowItWorksPage from "@/pages/HowItWorksPage";
 import LicenseAgreementPage from "@/pages/LicenseAgreementPage";
+import ContactUsPage from "@/pages/ContactUsPage";
 
 // Admin Pages
 import AdminLoginPage from "@/pages/admin/AdminLoginPage";
