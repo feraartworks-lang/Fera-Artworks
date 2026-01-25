@@ -48,9 +48,9 @@ const Footer = () => {
             <h4 className="font-serif text-foreground mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <span className="text-muted-foreground text-sm cursor-not-allowed">
+                <Link to="/license-agreement" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   License Agreement
-                </span>
+                </Link>
               </li>
               <li>
                 <span className="text-muted-foreground text-sm cursor-not-allowed">
