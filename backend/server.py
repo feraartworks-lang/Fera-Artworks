@@ -2854,6 +2854,110 @@ async def seed_demo_data():
     
     return {"message": f"Seeded {len(demo_artworks)} demo artworks"}
 
+# ==================== CONTACT FORM ====================
+
+@api_router.post("/contact")
+async def submit_contact_form(form: ContactFormRequest):
+    """Submit contact form and send email to admin"""
+    
+    if not RESEND_API_KEY:
+        raise HTTPException(status_code=500, detail="Email service not configured")
+    
+    # Map subject codes to readable names
+    subject_map = {
+        "technical": "Technical Support",
+        "payment": "Payment / Withdrawal",
+        "license": "License / P2P Issue",
+        "general": "General Inquiry"
+    }
+    subject_name = subject_map.get(form.subject, form.subject)
+    
+    # Create HTML email content
+    html_content = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #7c3aed; border-bottom: 2px solid #7c3aed; padding-bottom: 10px;">
+            New Contact Form Submission
+        </h2>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold; width: 150px;">Name</td>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{form.name}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Email</td>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">
+                    <a href="mailto:{form.email}" style="color: #7c3aed;">{form.email}</a>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Account/License ID</td>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{form.account_id or 'Not provided'}</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Subject</td>
+                <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">{subject_name}</td>
+            </tr>
+        </table>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #374151;">Message</h3>
+            <p style="color: #4b5563; white-space: pre-wrap;">{form.message}</p>
+        </div>
+        
+        <p style="color: #9ca3af; font-size: 12px; margin-top: 30px;">
+            Submitted at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}
+        </p>
+    </div>
+    """
+    
+    try:
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [CONTACT_EMAIL],
+            "subject": f"[Imperial Art Gallery] {subject_name} - {form.name}",
+            "html": html_content,
+            "reply_to": form.email
+        }
+        
+        email_result = await asyncio.to_thread(resend.Emails.send, params)
+        
+        # Log the contact submission
+        await db.contact_submissions.insert_one({
+            "submission_id": generate_id("contact_"),
+            "name": form.name,
+            "email": form.email,
+            "account_id": form.account_id,
+            "subject": form.subject,
+            "message": form.message,
+            "email_sent": True,
+            "email_id": email_result.get("id"),
+            "created_at": datetime.now(timezone.utc)
+        })
+        
+        return {
+            "status": "success",
+            "message": "Your message has been sent successfully. We will respond within 24-72 hours."
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to send contact email: {str(e)}")
+        
+        # Still log the submission even if email fails
+        await db.contact_submissions.insert_one({
+            "submission_id": generate_id("contact_"),
+            "name": form.name,
+            "email": form.email,
+            "account_id": form.account_id,
+            "subject": form.subject,
+            "message": form.message,
+            "email_sent": False,
+            "error": str(e),
+            "created_at": datetime.now(timezone.utc)
+        })
+        
+        raise HTTPException(status_code=500, detail="Failed to send message. Please try again later.")
+
 # Include the router in the main app
 app.include_router(api_router)
 
