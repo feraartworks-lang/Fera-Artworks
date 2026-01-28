@@ -70,9 +70,9 @@ const Footer = () => {
             <h4 className="font-serif text-foreground mb-4">Support</h4>
             <ul className="space-y-2">
               <li>
-                <span className="text-muted-foreground text-sm cursor-not-allowed">
+                <Link to="/help-center" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   Help Center
-                </span>
+                </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-muted-foreground hover:text-primary text-sm transition-colors">
