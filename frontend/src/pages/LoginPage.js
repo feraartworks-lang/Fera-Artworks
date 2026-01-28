@@ -88,7 +88,7 @@ const LoginPage = () => {
     setIsWeb3Loading(true);
 
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new BrowserProvider(window.ethereum);
       const accounts = await provider.send('eth_requestAccounts', []);
       const address = accounts[0];
 
@@ -115,29 +115,44 @@ const LoginPage = () => {
     setIsWalletConnectLoading(true);
 
     try {
-      // Initialize WalletConnect provider
-      const wcProvider = await EthereumProvider.init({
-        projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID,
-        chains: [1], // Ethereum mainnet
-        showQrModal: true,
-        optionalChains: [137, 56, 42161], // Polygon, BSC, Arbitrum
-        metadata: {
-          name: 'Imperial Art Gallery',
-          description: 'Digital Art Ownership Platform',
-          url: window.location.origin,
-          icons: [`${window.location.origin}/favicon.ico`]
-        }
-      });
-
-      // Connect and get accounts
-      await wcProvider.connect();
-      const accounts = wcProvider.accounts;
+      // Open Web3Modal
+      const { open } = await import('@web3modal/ethers/react');
+      await open();
       
-      if (!accounts || accounts.length === 0) {
-        throw new Error('No accounts found');
+      // Wait for connection
+      const checkConnection = async () => {
+        const { useWeb3ModalProvider, useWeb3ModalAccount } = await import('@web3modal/ethers/react');
+        return new Promise((resolve, reject) => {
+          let attempts = 0;
+          const interval = setInterval(async () => {
+            attempts++;
+            if (attempts > 60) { // 30 seconds timeout
+              clearInterval(interval);
+              reject(new Error('Connection timeout'));
+            }
+            
+            // Check if connected via window
+            if (window.ethereum?.selectedAddress) {
+              clearInterval(interval);
+              resolve(window.ethereum.selectedAddress);
+            }
+          }, 500);
+        });
+      };
+      
+      toast.info('Please connect your wallet using the modal');
+      
+    } catch (error) {
+      console.error('WalletConnect login error:', error);
+      if (error.message?.includes('User rejected') || error.message?.includes('rejected')) {
+        toast.error('Connection rejected by user');
+      } else {
+        toast.error('WalletConnect failed. Please try again.');
       }
-
-      const address = accounts[0];
+    } finally {
+      setIsWalletConnectLoading(false);
+    }
+  };
 
       // Request nonce from backend
       const { nonce, message } = await requestWeb3Nonce(address);
