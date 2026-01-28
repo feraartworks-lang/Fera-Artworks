@@ -84,22 +84,34 @@ const ContactUsPage = () => {
 
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast.success('Your request has been submitted successfully. You will receive a confirmation email shortly.');
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      accountId: '',
-      subject: '',
-      message: ''
-    });
-    setFile(null);
-    setCharCount(0);
-    setIsSubmitting(false);
+    try {
+      const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+      await axios.post(`${API}/contact`, {
+        name: formData.name,
+        email: formData.email,
+        account_id: formData.accountId || null,
+        subject: formData.subject,
+        message: formData.message
+      });
+      
+      toast.success('Your request has been submitted successfully. We will respond within 24-72 hours.');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        accountId: '',
+        subject: '',
+        message: ''
+      });
+      setFile(null);
+      setCharCount(0);
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
