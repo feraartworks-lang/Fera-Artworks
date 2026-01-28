@@ -85,21 +85,28 @@ const RegisterPage = () => {
   };
 
   const handleWalletConnectLogin = async () => {
+    if (!WALLETCONNECT_PROJECT_ID) {
+      toast.error('WalletConnect is not configured');
+      return;
+    }
+
     setIsWalletConnectLoading(true);
     try {
       const wcProvider = await EthereumProvider.init({
-        projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID,
+        projectId: WALLETCONNECT_PROJECT_ID,
         chains: [1],
         showQrModal: true,
-        optionalChains: [137, 56, 42161],
+        qrModalOptions: {
+          themeMode: 'dark'
+        },
         metadata: {
           name: 'Imperial Art Gallery',
           description: 'Digital Art Ownership Platform',
           url: window.location.origin,
-          icons: [`${window.location.origin}/favicon.ico`]
+          icons: ['https://avatars.githubusercontent.com/u/37784886']
         }
       });
-      await wcProvider.connect();
+      await wcProvider.enable();
       const address = wcProvider.accounts[0];
       const { nonce, message } = await requestWeb3Nonce(address);
       const signature = await wcProvider.request({ method: 'personal_sign', params: [message, address] });
