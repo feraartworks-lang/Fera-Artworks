@@ -86,7 +86,7 @@ const RegisterPage = () => {
     setIsWalletConnectLoading(true);
     try {
       const wcProvider = await EthereumProvider.init({
-        projectId: 'b820d127537d485abf9fe7e448e47fe7',
+        projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID,
         chains: [1],
         showQrModal: true,
         optionalChains: [137, 56, 42161],
