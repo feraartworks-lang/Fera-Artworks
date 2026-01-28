@@ -78,36 +78,56 @@ const LoginPage = () => {
   };
 
   const handleWalletConnectLogin = async () => {
+    if (!WALLETCONNECT_PROJECT_ID) {
+      toast.error('WalletConnect is not configured');
+      return;
+    }
+
     setIsWalletConnectLoading(true);
 
     try {
-      // Open Web3Modal
-      const { open } = await import('@web3modal/ethers/react');
-      await open();
+      // Initialize WalletConnect provider with QR modal
+      const provider = await EthereumProvider.init({
+        projectId: WALLETCONNECT_PROJECT_ID,
+        chains: [1],
+        showQrModal: true,
+        qrModalOptions: {
+          themeMode: 'dark'
+        },
+        metadata: {
+          name: 'Imperial Art Gallery',
+          description: 'Digital Art Ownership Platform',
+          url: window.location.origin,
+          icons: ['https://avatars.githubusercontent.com/u/37784886']
+        }
+      });
+
+      // Enable session (this shows QR modal)
+      await provider.enable();
       
-      // Wait for connection
-      const checkConnection = async () => {
-        const { useWeb3ModalProvider, useWeb3ModalAccount } = await import('@web3modal/ethers/react');
-        return new Promise((resolve, reject) => {
-          let attempts = 0;
-          const interval = setInterval(async () => {
-            attempts++;
-            if (attempts > 60) { // 30 seconds timeout
-              clearInterval(interval);
-              reject(new Error('Connection timeout'));
-            }
-            
-            // Check if connected via window
-            if (window.ethereum?.selectedAddress) {
-              clearInterval(interval);
-              resolve(window.ethereum.selectedAddress);
-            }
-          }, 500);
-        });
-      };
-      
-      toast.info('Please connect your wallet using the modal');
-      
+      const accounts = provider.accounts;
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found');
+      }
+
+      const address = accounts[0];
+
+      // Request nonce from backend
+      const { nonce, message } = await requestWeb3Nonce(address);
+
+      // Sign message
+      const signature = await provider.request({
+        method: 'personal_sign',
+        params: [message, address]
+      });
+
+      // Verify and login
+      await loginWithWeb3(address, signature, nonce);
+      toast.success('WalletConnect connected successfully!');
+      navigate(from, { replace: true });
+
+      // Disconnect provider
+      await provider.disconnect();
     } catch (error) {
       console.error('WalletConnect login error:', error);
       if (error.message?.includes('User rejected') || error.message?.includes('rejected')) {
