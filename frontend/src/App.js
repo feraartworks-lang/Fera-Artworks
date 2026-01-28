@@ -20,6 +20,7 @@ import HowItWorksPage from "@/pages/HowItWorksPage";
 import LicenseAgreementPage from "@/pages/LicenseAgreementPage";
 import ContactUsPage from "@/pages/ContactUsPage";
 import FAQPage from "@/pages/FAQPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 
 // Admin Pages
 import AdminLoginPage from "@/pages/admin/AdminLoginPage";
