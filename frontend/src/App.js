@@ -78,6 +78,7 @@ function AppRouter() {
       <Route path="/contact" element={<ContactUsPage />} />
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="/help-center" element={<HelpCenterPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Protected Routes */}
