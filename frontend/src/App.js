@@ -76,6 +76,7 @@ function AppRouter() {
       <Route path="/license-agreement" element={<LicenseAgreementPage />} />
       <Route path="/contact" element={<ContactUsPage />} />
       <Route path="/faq" element={<FAQPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Protected Routes */}
