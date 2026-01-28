@@ -43,6 +43,13 @@ JWT_EXPIRATION_HOURS = 168  # 7 days
 FOUNDER_ADMIN_EMAIL = os.environ.get('FOUNDER_ADMIN_EMAIL', 'founder@artchain.com')
 FOUNDER_ADMIN_SECRET = os.environ.get('FOUNDER_ADMIN_SECRET', 'ArtChain_Founder_2024_SecretKey')
 
+# Email Configuration (Resend)
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+CONTACT_EMAIL = 'contact@imperialartgallery.com'
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
+
 # Upload directory for artworks
 UPLOAD_DIR = ROOT_DIR / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
