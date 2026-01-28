@@ -81,7 +81,7 @@ const LoginPage = () => {
     try {
       // Initialize WalletConnect provider
       const wcProvider = await EthereumProvider.init({
-        projectId: 'b820d127537d485abf9fe7e448e47fe7', // Public project ID for demo
+        projectId: process.env.REACT_APP_WALLETCONNECT_PROJECT_ID,
         chains: [1], // Ethereum mainnet
         showQrModal: true,
         optionalChains: [137, 56, 42161], // Polygon, BSC, Arbitrum
