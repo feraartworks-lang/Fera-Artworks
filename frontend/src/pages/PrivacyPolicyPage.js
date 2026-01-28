@@ -192,7 +192,7 @@ const PrivacyPolicyPage = () => {
           </ul>
           <div className="bg-muted/30 rounded-lg p-4">
             <p className="text-muted-foreground text-sm">
-              Requests can be submitted via <span className="text-primary font-medium">contact@imperialartgallery.com</span>
+              Requests can be submitted via <a href="mailto:contact@imperialartgallery.com" className="text-primary font-medium hover:underline">contact@imperialartgallery.com</a>
             </p>
           </div>
         </>
