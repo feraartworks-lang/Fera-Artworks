@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,8 +9,44 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { Mail, Lock, Wallet, ArrowLeft, Loader2, Link2 } from 'lucide-react';
-import { ethers } from 'ethers';
-import { EthereumProvider } from '@walletconnect/ethereum-provider';
+import { BrowserProvider } from 'ethers';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
+
+// Web3Modal configuration
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID;
+
+const metadata = {
+  name: 'Imperial Art Gallery',
+  description: 'Digital Art Ownership Platform',
+  url: window.location.origin,
+  icons: [`${window.location.origin}/favicon.ico`]
+};
+
+const ethersConfig = defaultConfig({
+  metadata,
+  enableEIP6963: true,
+  enableInjected: true,
+  enableCoinbase: true
+});
+
+const mainnet = {
+  chainId: 1,
+  name: 'Ethereum',
+  currency: 'ETH',
+  explorerUrl: 'https://etherscan.io',
+  rpcUrl: 'https://eth.llamarpc.com'
+};
+
+// Initialize Web3Modal
+if (projectId) {
+  createWeb3Modal({
+    ethersConfig,
+    chains: [mainnet],
+    projectId,
+    enableAnalytics: false,
+    themeMode: 'dark'
+  });
+}
 
 const LoginPage = () => {
   const { login, loginWithGoogle, loginWithWeb3, requestWeb3Nonce } = useAuth();
