@@ -21,6 +21,7 @@ import LicenseAgreementPage from "@/pages/LicenseAgreementPage";
 import ContactUsPage from "@/pages/ContactUsPage";
 import FAQPage from "@/pages/FAQPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import HelpCenterPage from "@/pages/HelpCenterPage";
 
 // Admin Pages
 import AdminLoginPage from "@/pages/admin/AdminLoginPage";
