@@ -9,8 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { Mail, Lock, User, Wallet, ArrowLeft, Loader2, Link2 } from 'lucide-react';
-import { ethers } from 'ethers';
+import { BrowserProvider } from 'ethers';
 import { EthereumProvider } from '@walletconnect/ethereum-provider';
+
+const WALLETCONNECT_PROJECT_ID = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID;
 
 const RegisterPage = () => {
   const { register, loginWithGoogle, loginWithWeb3, requestWeb3Nonce } = useAuth();
