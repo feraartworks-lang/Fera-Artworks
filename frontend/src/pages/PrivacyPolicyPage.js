@@ -246,10 +246,10 @@ const PrivacyPolicyPage = () => {
           <p className="text-muted-foreground mb-2">
             For questions regarding the Privacy Policy:
           </p>
-          <p className="text-primary font-medium flex items-center gap-2">
+          <a href="mailto:contact@imperialartgallery.com" className="text-primary font-medium flex items-center gap-2 hover:underline">
             <Mail className="w-4 h-4" />
             contact@imperialartgallery.com
-          </p>
+          </a>
         </div>
       )
     }
