@@ -154,34 +154,6 @@ const LoginPage = () => {
     }
   };
 
-      // Request nonce from backend
-      const { nonce, message } = await requestWeb3Nonce(address);
-
-      // Sign message with WalletConnect
-      const signature = await wcProvider.request({
-        method: 'personal_sign',
-        params: [message, address]
-      });
-
-      // Verify and login
-      await loginWithWeb3(address, signature, nonce);
-      toast.success('WalletConnect connected successfully!');
-      navigate(from, { replace: true });
-
-      // Disconnect after successful login (we store the address in our system)
-      await wcProvider.disconnect();
-    } catch (error) {
-      console.error('WalletConnect login error:', error);
-      if (error.message?.includes('User rejected')) {
-        toast.error('Connection rejected by user');
-      } else {
-        toast.error(error.response?.data?.detail || 'WalletConnect failed');
-      }
-    } finally {
-      setIsWalletConnectLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4" data-testid="login-page">
       {/* Background */}
