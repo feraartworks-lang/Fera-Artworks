@@ -275,6 +275,14 @@ class RefundRequest(BaseModel):
     reason: str
     refund_amount: Optional[float] = None  # Full refund if None
 
+class ContactFormRequest(BaseModel):
+    """Contact form submission"""
+    name: str
+    email: EmailStr
+    account_id: Optional[str] = None
+    subject: str
+    message: str
+
 # ==================== HELPER FUNCTIONS ====================
 
 def generate_id(prefix: str = "") -> str:
