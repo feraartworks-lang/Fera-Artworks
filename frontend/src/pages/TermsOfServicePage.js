@@ -163,7 +163,7 @@ const TermsOfServicePage = () => {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-primary">•</span>
-            After resale, all rights and obligations pass to the new buyer.
+            After resale, all rights and obligations pass to the new buyer; however, the right to refund is limited to the first buyer who purchased directly from the platform and cannot be transferred subsequently.
           </li>
           <li className="flex items-start gap-2">
             <span className="text-primary">•</span>
