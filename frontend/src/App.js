@@ -80,6 +80,7 @@ function AppRouter() {
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/help-center" element={<HelpCenterPage />} />
+      <Route path="/terms-of-service" element={<TermsOfServicePage />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       
       {/* Protected Routes */}
