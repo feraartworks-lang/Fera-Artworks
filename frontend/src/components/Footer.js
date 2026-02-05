@@ -58,9 +58,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <span className="text-muted-foreground text-sm cursor-not-allowed">
+                <Link to="/terms-of-service" className="text-muted-foreground hover:text-primary text-sm transition-colors">
                   Terms of Service
-                </span>
+                </Link>
               </li>
             </ul>
           </div>
