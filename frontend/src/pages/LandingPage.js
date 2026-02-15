@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Shield, Repeat, RefreshCw, Wallet, ArrowRight, Lock, Eye, Download, ChevronDown, Crown, Gem } from 'lucide-react';
+import { Shield, Repeat, RefreshCw, Wallet, ArrowRight, Lock, Eye, Download, ChevronDown, Gem } from 'lucide-react';
 import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
