@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
 import {
   Select,
   SelectContent,
@@ -18,19 +16,19 @@ import {
 import { toast } from 'sonner';
 import axios from 'axios';
 import { 
-  Send, Clock, Shield, FileText, AlertCircle,
-  Headphones, CreditCard, Key, HelpCircle, Upload, X, Loader2
+  Send, Clock, Headphones, CreditCard, Key, HelpCircle, 
+  Loader2, Crown, Gem, Mail, User, MessageSquare
 } from 'lucide-react';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const ContactUsPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    accountId: '',
     subject: '',
     message: ''
   });
-  const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [charCount, setCharCount] = useState(0);
 
@@ -42,36 +40,17 @@ const ContactUsPage = () => {
   ];
 
   const responseTimes = [
-    { category: 'Technical Issues', time: '24-48 hours', color: 'text-green-400' },
-    { category: 'Payment / P2P Issues', time: '48-72 hours', color: 'text-yellow-400' },
-    { category: 'License / Legal Questions', time: '3-5 business days', color: 'text-orange-400' }
+    { category: 'Technical Issues', time: '24-48 hours', color: 'text-[#D4AF37]' },
+    { category: 'Payment / P2P Issues', time: '48-72 hours', color: 'text-[#B8860B]' },
+    { category: 'License / Legal Questions', time: '3-5 business days', color: 'text-[#8A7028]' }
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
     if (name === 'message') {
-      if (value.length <= 500) {
-        setFormData(prev => ({ ...prev, [name]: value }));
-        setCharCount(value.length);
-      }
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setCharCount(value.length);
     }
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        toast.error('File size must be less than 5MB');
-        return;
-      }
-      setFile(selectedFile);
-    }
-  };
-
-  const removeFile = () => {
-    setFile(null);
   };
 
   const handleSubmit = async (e) => {
@@ -83,318 +62,240 @@ const ContactUsPage = () => {
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
       await axios.post(`${API}/contact`, {
         name: formData.name,
         email: formData.email,
-        account_id: formData.accountId || null,
-        subject: formData.subject,
+        subject: subjectOptions.find(s => s.value === formData.subject)?.label || formData.subject,
         message: formData.message
       });
       
-      toast.success('Your request has been submitted successfully. We will respond within 24-72 hours.');
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        accountId: '',
-        subject: '',
-        message: ''
-      });
-      setFile(null);
+      toast.success('Your message has been sent successfully!');
+      setFormData({ name: '', email: '', subject: '', message: '' });
       setCharCount(0);
     } catch (error) {
       console.error('Contact form error:', error);
-      toast.error(error.response?.data?.detail || 'Failed to send message. Please try again.');
+      toast.error('Failed to send message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#050505]" data-testid="contact-page">
       <Navbar />
       
-      <main className="pt-24 pb-16">
-        <div className="max-w-4xl mx-auto px-4">
+      <main className="pt-32 pb-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
           >
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
-                Contact Us
-              </h1>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Platform support handles technical, transaction, and license-related inquiries only.
-              </p>
+            <div className="flex justify-center mb-6">
+              <Crown className="w-12 h-12 text-[#D4AF37]" strokeWidth={1} />
             </div>
+            <p className="text-[#D4AF37] text-xs uppercase tracking-[0.3em] mb-4">Get in Touch</p>
+            <h1 className="font-serif text-5xl sm:text-6xl font-bold text-[#F5F5F0] mb-6">
+              Contact Us
+            </h1>
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="w-16 h-px bg-gradient-to-r from-transparent to-[#D4AF37]/50" />
+              <Gem className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+              <div className="w-16 h-px bg-gradient-to-l from-transparent to-[#D4AF37]/50" />
+            </div>
+            <p className="text-[#A3A3A3] text-lg max-w-2xl mx-auto">
+              Have a question or need assistance? Our team is here to help you with any inquiries about licenses, payments, or technical support.
+            </p>
+          </motion.div>
 
-            {/* Notice */}
-            <Card className="card-glass border-yellow-500/30 bg-yellow-500/5 mb-8">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <AlertCircle className="w-6 h-6 text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-muted-foreground text-sm">
-                      Response time may vary depending on the nature of your request. All requests are logged.
-                      Please submit your request with clear, concise, and accurate information.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Contact Form */}
-              <div className="lg:col-span-2">
-                <Card className="card-glass">
-                  <CardHeader>
-                    <CardTitle className="font-serif flex items-center gap-2">
-                      <Send className="w-5 h-5 text-primary" />
-                      Submit a Request
-                    </CardTitle>
-                    <CardDescription>
-                      Fill out the form below and we'll get back to you
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Name */}
-                      <div className="space-y-2">
-                        <Label htmlFor="name">
-                          Name / Username <span className="text-red-500">*</span>
-                        </Label>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {/* Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="lg:col-span-2"
+            >
+              <div className="border border-[#D4AF37]/20 bg-[#080808] p-8">
+                <h2 className="font-serif text-2xl text-[#F5F5F0] mb-6">Send us a Message</h2>
+                
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-[#A3A3A3] text-xs uppercase tracking-wider">
+                        Full Name *
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#525252]" strokeWidth={1.5} />
                         <Input
                           id="name"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          placeholder="Enter your name or username"
+                          placeholder="Your name"
+                          className="pl-12 h-12 bg-transparent border-[#333] focus:border-[#D4AF37] text-[#F5F5F0] placeholder:text-[#444]"
                           required
+                          data-testid="contact-name-input"
                         />
                       </div>
-
-                      {/* Email */}
-                      <div className="space-y-2">
-                        <Label htmlFor="email">
-                          Email <span className="text-red-500">*</span>
-                        </Label>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-[#A3A3A3] text-xs uppercase tracking-wider">
+                        Email Address *
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#525252]" strokeWidth={1.5} />
                         <Input
                           id="email"
                           name="email"
                           type="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          placeholder="your@email.com"
+                          placeholder="you@example.com"
+                          className="pl-12 h-12 bg-transparent border-[#333] focus:border-[#D4AF37] text-[#F5F5F0] placeholder:text-[#444]"
                           required
+                          data-testid="contact-email-input"
                         />
                       </div>
+                    </div>
+                  </div>
 
-                      {/* Account/License ID */}
-                      <div className="space-y-2">
-                        <Label htmlFor="accountId">
-                          Account ID / License ID <span className="text-muted-foreground text-xs">(if applicable)</span>
-                        </Label>
-                        <Input
-                          id="accountId"
-                          name="accountId"
-                          value={formData.accountId}
-                          onChange={handleInputChange}
-                          placeholder="e.g., user_xxxxx or lic_xxxxx"
-                        />
-                      </div>
-
-                      {/* Subject */}
-                      <div className="space-y-2">
-                        <Label>
-                          Subject / Request Type <span className="text-red-500">*</span>
-                        </Label>
-                        <Select
-                          value={formData.subject}
-                          onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {subjectOptions.map(option => (
-                              <SelectItem key={option.value} value={option.value}>
-                                <div className="flex items-center gap-2">
-                                  <option.icon className="w-4 h-4" />
-                                  {option.label}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Message */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="message">
-                            Your Message <span className="text-red-500">*</span>
-                          </Label>
-                          <span className={`text-xs ${charCount >= 450 ? 'text-yellow-500' : 'text-muted-foreground'}`}>
-                            {charCount}/500
-                          </span>
-                        </div>
-                        <Textarea
-                          id="message"
-                          name="message"
-                          value={formData.message}
-                          onChange={handleInputChange}
-                          placeholder="Describe your issue or inquiry in detail..."
-                          className="min-h-[150px] resize-none"
-                          required
-                        />
-                      </div>
-
-                      {/* File Upload */}
-                      <div className="space-y-2">
-                        <Label>
-                          File Attachment <span className="text-muted-foreground text-xs">(optional, supporting documents only)</span>
-                        </Label>
-                        {!file ? (
-                          <div className="border-2 border-dashed border-muted rounded-lg p-6 text-center">
-                            <input
-                              type="file"
-                              id="file-upload"
-                              className="hidden"
-                              onChange={handleFileChange}
-                              accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-                            />
-                            <label htmlFor="file-upload" className="cursor-pointer">
-                              <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground">
-                                Click to upload or drag and drop
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                PDF, PNG, JPG, DOC (max 5MB)
-                              </p>
-                            </label>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div className="space-y-2">
+                    <Label htmlFor="subject" className="text-[#A3A3A3] text-xs uppercase tracking-wider">
+                      Subject *
+                    </Label>
+                    <Select value={formData.subject} onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}>
+                      <SelectTrigger className="h-12 bg-transparent border-[#333] text-[#F5F5F0]" data-testid="contact-subject-select">
+                        <SelectValue placeholder="Select a topic" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#0A0A0A] border-[#333]">
+                        {subjectOptions.map((option) => (
+                          <SelectItem 
+                            key={option.value} 
+                            value={option.value}
+                            className="text-[#F5F5F0] focus:bg-[#D4AF37]/10 focus:text-[#D4AF37]"
+                          >
                             <div className="flex items-center gap-2">
-                              <FileText className="w-5 h-5 text-primary" />
-                              <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+                              <option.icon className="w-4 h-4 text-[#D4AF37]" strokeWidth={1.5} />
+                              {option.label}
                             </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={removeFile}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                      {/* Disclaimer */}
-                      <div className="bg-muted/30 rounded-lg p-4">
-                        <p className="text-xs text-muted-foreground">
-                          By submitting this form, you acknowledge that the information you provide will be added to 
-                          platform records and your request will be used only for relevant processes. The platform is 
-                          obligated to review your request; no guarantee of action or outcome is provided.
-                        </p>
-                      </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="text-[#A3A3A3] text-xs uppercase tracking-wider">
+                      Message *
+                    </Label>
+                    <div className="relative">
+                      <MessageSquare className="absolute left-4 top-4 w-4 h-4 text-[#525252]" strokeWidth={1.5} />
+                      <Textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        placeholder="Describe your question or issue in detail..."
+                        className="pl-12 min-h-[150px] bg-transparent border-[#333] focus:border-[#D4AF37] text-[#F5F5F0] placeholder:text-[#444] resize-none"
+                        maxLength={2000}
+                        required
+                        data-testid="contact-message-input"
+                      />
+                    </div>
+                    <p className="text-xs text-[#525252] text-right">{charCount}/2000</p>
+                  </div>
 
-                      {/* Submit Button */}
-                      <Button
-                        type="submit"
-                        className="w-full btn-primary h-12"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Submitting...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4 mr-2" />
-                            Submit Request
-                          </>
-                        )}
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
+                  <Button 
+                    type="submit" 
+                    className="w-full btn-gold h-14"
+                    disabled={isSubmitting}
+                    data-testid="contact-submit-btn"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                        Send Message
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </motion.div>
+
+            {/* Sidebar */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-8"
+            >
+              {/* Response Times */}
+              <div className="border border-[#D4AF37]/20 bg-[#080808] p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <Clock className="w-5 h-5 text-[#D4AF37]" strokeWidth={1.5} />
+                  <h3 className="font-serif text-lg text-[#F5F5F0]">Response Times</h3>
+                </div>
+                <div className="space-y-4">
+                  {responseTimes.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center py-3 border-b border-[#D4AF37]/10 last:border-0">
+                      <span className="text-[#A3A3A3] text-sm">{item.category}</span>
+                      <span className={`font-mono text-sm ${item.color}`}>{item.time}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Response Times */}
-                <Card className="card-glass">
-                  <CardHeader>
-                    <CardTitle className="font-serif text-lg flex items-center gap-2">
-                      <Clock className="w-5 h-5 text-primary" />
-                      Response Times
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {responseTimes.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">{item.category}</span>
-                        <span className={`text-sm font-medium ${item.color}`}>{item.time}</span>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* About Support Process */}
-                <Card className="card-glass">
-                  <CardHeader>
-                    <CardTitle className="font-serif text-lg flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-primary" />
-                      About the Process
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3 text-sm text-muted-foreground">
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        Automatic confirmation email is sent after submission
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        Support team responds only to specified categories
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        All interactions are recorded in immutable logs
-                      </li>
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                {/* Categories */}
-                <Card className="card-glass">
-                  <CardHeader>
-                    <CardTitle className="font-serif text-lg">Support Categories</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {subjectOptions.map((option, index) => (
-                      <div key={index} className="flex items-center gap-3 p-2 rounded-lg bg-muted/20">
-                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                          <option.icon className="w-4 h-4 text-primary" />
-                        </div>
-                        <span className="text-sm text-muted-foreground">{option.label}</span>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+              {/* Direct Contact */}
+              <div className="border border-[#D4AF37]/20 bg-[#080808] p-6">
+                <h3 className="font-serif text-lg text-[#F5F5F0] mb-4">Direct Contact</h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs text-[#525252] uppercase tracking-wider mb-1">Email</p>
+                    <a href="mailto:contact@imperialartgallery.com" className="text-[#D4AF37] hover:underline text-sm">
+                      contact@imperialartgallery.com
+                    </a>
+                  </div>
+                  <div>
+                    <p className="text-xs text-[#525252] uppercase tracking-wider mb-1">Business Hours</p>
+                    <p className="text-[#A3A3A3] text-sm">Monday - Friday, 9:00 AM - 6:00 PM (UTC)</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </motion.div>
+
+              {/* Quick Links */}
+              <div className="border border-[#D4AF37]/20 bg-[#080808] p-6">
+                <h3 className="font-serif text-lg text-[#F5F5F0] mb-4">Quick Links</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a href="/faq" className="text-[#A3A3A3] hover:text-[#D4AF37] text-sm transition-colors">
+                      → Frequently Asked Questions
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/help-center" className="text-[#A3A3A3] hover:text-[#D4AF37] text-sm transition-colors">
+                      → Help Center
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/how-it-works" className="text-[#A3A3A3] hover:text-[#D4AF37] text-sm transition-colors">
+                      → How It Works
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </main>
 
