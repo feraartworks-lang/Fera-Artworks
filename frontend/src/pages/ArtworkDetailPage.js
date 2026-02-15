@@ -210,8 +210,7 @@ const ArtworkDetailPage = () => {
                   {/* Status badges */}
                   <div className="absolute top-4 right-4 flex flex-col gap-2">
                     {artwork.is_purchased && !artwork.is_refunded && (
-                      <span className="px-3 py-1 bg-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                        <Crown className="w-3 h-3" strokeWidth={2} />
+                      <span className="px-3 py-1 bg-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider">
                         Owned
                       </span>
                     )}
