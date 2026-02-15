@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { 
   FileWarning, Eye, ShoppingCart, Lock, RefreshCw, 
   Undo2, Wallet, Shield, AlertTriangle, CheckCircle2,
-  Crown, Gem, ArrowRight
+  Gem, ArrowRight
 } from 'lucide-react';
 
 const HowItWorksPage = () => {

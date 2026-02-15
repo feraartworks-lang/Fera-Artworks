@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Crown, Gem } from 'lucide-react';
+import { Gem } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

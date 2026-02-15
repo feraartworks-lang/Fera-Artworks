@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { 
   Send, Clock, Headphones, CreditCard, Key, HelpCircle, 
-  Loader2, Crown, Gem, Mail, User, MessageSquare
+  Loader2, Gem, Mail, User, MessageSquare
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;

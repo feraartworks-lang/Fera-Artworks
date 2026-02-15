@@ -28,7 +28,7 @@ import { toast } from 'sonner';
 import { 
   ArrowLeft, Shield, Eye, Download, RefreshCw, Tag, 
   User, AlertTriangle, Loader2, ShoppingCart,
-  Lock, DollarSign, Gem, Crown
+  Lock, DollarSign, Gem
 } from 'lucide-react';
 import axios from 'axios';
 

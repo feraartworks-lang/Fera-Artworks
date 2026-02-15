@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Mail, Lock, Wallet, ArrowLeft, Loader2, Link2, Crown, Gem } from 'lucide-react';
+import { Mail, Lock, Wallet, ArrowLeft, Loader2, Link2, Gem } from 'lucide-react';
 import { BrowserProvider } from 'ethers';
 import { EthereumProvider } from '@walletconnect/ethereum-provider';
 
