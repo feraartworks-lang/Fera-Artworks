@@ -1,133 +1,100 @@
-# Ferâ - Digital Art Ownership Platform PRD
+# Imperial Art Gallery - Product Requirements Document
 
 ## Original Problem Statement
-Dijital Sanat Eseri Sahiplik ve Yeniden Satış Platformu - A platform for unique digital artwork license-based ownership, transfer, resale and refund. The system defines artworks as ownership licenses (not files) and ensures security, traceability and value transfer.
+A global platform called "Imperial Art Gallery" for the ownership, transfer, resale, and return of unique digital artworks. The ownership model is based on a license that grants exclusive access to the art.
 
-## Deployment Status: ✅ PRODUCTION READY
-- Preview URL: https://nft-marketplace-18.preview.emergentagent.com
-- Last Updated: January 18, 2026
+## Core Features
+- **License-Based Ownership:** Unique, exclusive, and traceable license for each artwork
+- **Secure Viewer & Irreversible Download:** Purchased art viewed securely; downloading voids return/resale rights
+- **P2P Resale & Returns:** Users can resell or return artworks only if `isUsed` flag is `false`
+- **Custom Payment System:** A2A bank transfers and USDT crypto payments with manual admin reconciliation
+- **Multi-faceted Authentication:** JWT, Google OAuth, MetaMask, and WalletConnect
+- **Admin Panel:** 2FA-secured for managing users, artworks, transactions
 
-## User Personas
-1. **Digital Art Collector**: Wants to own unique digital artworks with verified ownership rights
-2. **Crypto Enthusiast**: Prefers Web3/MetaMask authentication and crypto payments
-3. **Artist**: Uploads and sells original digital artworks
-4. **P2P Trader**: Buys and resells artworks on the marketplace
-5. **Founder Admin**: Platform owner with full control over all operations
+## Technical Stack
+- **Backend:** FastAPI, MongoDB, Resend (emails)
+- **Frontend:** React, React Router, Tailwind CSS, Shadcn/UI, Framer Motion
+- **Auth:** JWT, Google OAuth, Web3 (MetaMask/WalletConnect signature)
 
-## Core Requirements
-- Single ownership per artwork (one owner at any time)
-- License-based access (not file ownership)
-- Platform authority for ownership/access/transfer/refund
-- Secure Viewer (no download)
-- Full resolution download option (marks as used)
-- P2P resale marketplace
-- Lifetime refund policy (if unused)
-- Multiple auth methods (Email/JWT, Google OAuth, Web3 wallet, WalletConnect)
-- Dark gallery theme design
-- **Founder-only admin panel with full control**
-- **Admin 2FA (TOTP) support**
+## What's Been Implemented
 
-## What's Been Implemented (January 18, 2026)
+### December 2025 - Renaissance UI/UX Redesign (COMPLETED)
+- ✅ Complete visual transformation to "Renaissance Digital Luxury" theme
+- ✅ Gold (#D4AF37) and obsidian black (#050505) color palette
+- ✅ Cinzel serif font for headings, Manrope for body
+- ✅ Custom CSS classes: `btn-gold`, `btn-outline-gold`, `card-renaissance`
+- ✅ Global noise overlay for canvas texture effect
+- ✅ Gold shimmer text animations
+- ✅ Frame corner decorations on images
+- ✅ Ornate dividers with gem icons
 
-### Payment Systems - STRIPE-FREE ✅
-- ✅ **Account-to-Account (A2A) Bank Transfer**: Custom payment system with unique reference codes for SEPA/SWIFT transfers
-- ✅ **USDT Crypto Payments**: Support for TRC-20 (Tron), ERC-20 (Ethereum), BEP-20 (BSC) networks
-- ✅ **Manual Reconciliation**: Admin can record incoming bank/crypto transactions and auto-match by reference code
-- ✅ **Order Management**: Create, view, confirm, and cancel payment orders
+### Pages Redesigned
+- ✅ **Landing Page** - Full-screen hero with Renaissance background, animated stats, featured artworks
+- ✅ **Navbar** - Crown logo, scroll-aware transparency, gold active states
+- ✅ **Footer** - Column layout with gem dividers
+- ✅ **Gallery Page** - Masonry-style grid with gold frame corners, filters
+- ✅ **Login Page** - Split-screen with Renaissance art quotes
+- ✅ **Register Page** - Split-screen with form validation
+- ✅ **Artwork Detail Page** - Frame decorations, license ID display, pricing card
+- ✅ **How It Works Page** - Roman numeral sections (I-IX)
+- ✅ **Contact Us Page** - Form with response time sidebar
 
-### Backend (FastAPI + MongoDB)
-- ✅ User authentication (Email/Password, Google OAuth, Web3/MetaMask, WalletConnect)
-- ✅ JWT token management with 7-day expiration
-- ✅ Artwork CRUD operations with state machine (isPurchased, isUsed, isTransferred, isRefunded)
-- ✅ Purchase flow with 5% license protection fee
-- ✅ P2P marketplace with 1% commission
-- ✅ Refund system for unused artworks
-- ✅ Withdrawal system with 1% fee
-- ✅ **Founder-only Admin Panel with triple authentication (email + password + secret key)**
-- ✅ **Admin 2FA (TOTP) - Google Authenticator compatible**
-- ✅ Audit logs with 3-day TTL auto-deletion after refund
-- ✅ Secure file storage and access control
-- ✅ **User ban/suspend system**
-- ✅ **Manual refund/transfer operations**
-- ✅ **System alerts and notifications**
-- ✅ **CSV/JSON data export**
-- ✅ **User bank info (IBAN, Bank Name, Account Holder, SWIFT/BIC) storage and retrieval**
-- ✅ **Payment order system with A2A bank transfer support**
-- ✅ **USDT crypto payment endpoints (TRC-20, ERC-20, BEP-20)**
-- ✅ **Admin crypto transaction recording and auto-matching**
+### Previously Completed Features
+- ✅ USDT Payment Flow (tested end-to-end)
+- ✅ A2A Bank Transfer Payment System
+- ✅ Platform Rebranding to "Imperial Art Gallery"
+- ✅ Unique License ID System
+- ✅ Contact Form Email Integration (Resend)
+- ✅ WalletConnect Integration
+- ✅ Admin 2FA Authentication
+- ✅ Informational Pages (FAQ, Privacy Policy, Terms, Help Center, License Agreement)
 
-### Frontend (React + Shadcn UI + Tailwind)
-- ✅ Landing page with dark gallery theme
-- ✅ Art Gallery with search, filter, and sort
-- ✅ Artwork detail page with purchase flow
-- ✅ Secure Viewer with right-click disabled
-- ✅ User Dashboard (collection, transactions, listings)
-- ✅ **User Dashboard Settings tab for bank info management**
-- ✅ P2P Marketplace (browse, list, buy)
-- ✅ Multi-auth support (Email, Google, MetaMask, WalletConnect)
-- ✅ Responsive design with mobile support
-- ✅ **Checkout page with Bank Transfer and USDT payment options**
-- ✅ **USDT network selection (TRC-20, ERC-20, BEP-20)**
-- ✅ **Payment order status tracking with reference code display**
-
-### Admin Panel Features (Founder Only) - FULLY COMPLETE ✅
-- ✅ **Secure login with triple authentication**
-- ✅ **Dashboard with platform statistics**
-- ✅ **Artwork management (create, edit, delete) with modal forms**
-- ✅ **User management (ban, suspend, unban, unsuspend) with dialogs**
-- ✅ **User bank info viewing (IBAN, Bank Name, SWIFT/BIC, Account Holder) with popup**
-- ✅ **Transaction history with filtering by type**
-- ✅ **Manual refund processing with dialog**
-- ✅ **Manual ownership transfer with dialog**
-- ✅ **Audit log viewer with expiration info and TTL display**
-- ✅ **Alert/notification system with read/unread status**
-- ✅ **Reports with date filtering and summary statistics**
-- ✅ **CSV/JSON data export for transactions, users, artworks**
-
-### Financial Model Implemented
-- 5% License Protection Fee on purchases (non-refundable)
-- 1% Platform Commission on P2P sales
-- 1% Withdrawal Fee
-- Minimum resale price: 1% above purchase price
-
-### Security Notes
-- Admin credentials are stored securely in environment variables (`/app/backend/.env`)
-- Never commit credentials to version control
-- Change default secrets before production deployment
-
-### Code Cleanup Completed
-- ✅ Removed obsolete `/app/frontend/src/pages/AdminPage.js`
-- ✅ All admin routes properly configured in App.js
+## Test Results
+- **Frontend Success Rate:** 98%
+- **All pages loading correctly**
+- **Renaissance theme consistent across all pages**
+- **Responsive design working (minor issues fixed)**
 
 ## Prioritized Backlog
 
-### P0 (Critical - Completed ✅)
-- [x] ~~Payment gateway integration~~ → Replaced with custom A2A bank transfer + USDT crypto
-- [x] Admin 2FA (TOTP) support
+### P1 - High Priority (Next)
+- **P2P Marketplace Activation**
+  - Remove "Coming Soon" overlay
+  - Implement P2P sale backend logic
+  - **CRITICAL:** New owners from P2P sales do NOT get refund rights
 
-### P1 (High Priority - Next Sprint)
-- [ ] Automated payment reconciliation (bank statement parsing, blockchain listener)
-- [ ] Re-enable P2P Marketplace with A2A/USDT payments
-- [ ] File upload with watermarking
+### P2 - Medium Priority
+- Automate Payment Reconciliation (blockchain listener for USDT)
+- Expand Email Notification System (order confirmations, password resets)
 
-### P2 (Medium Priority)
-- [ ] Email notifications (SendGrid/Resend integration)
-- [ ] Real-time dashboard updates (WebSocket)
-- [ ] Privacy Policy and Terms of Service pages
-- [ ] Advanced analytics dashboard
-- [ ] Mobile app (React Native)
+### P3 - Future Enhancements
+- Open Banking integration for A2A
+- Bank statement parser for automated reconciliation
 
-## Next Tasks
-1. Automate payment reconciliation (bank CSV parsing, blockchain listener for USDT)
-2. Re-enable P2P Marketplace with new payment flows
-3. Implement watermark generation for previews
-4. Build email notification system (SendGrid/Resend)
-5. Add artwork upload functionality for artists
-6. Create Privacy Policy and Terms of Service pages
+## Key Files Reference
+- `/app/design_guidelines.json` - Renaissance theme design system
+- `/app/frontend/src/index.css` - Global styles with gold theme
+- `/app/frontend/src/pages/` - All redesigned pages
+- `/app/frontend/src/components/Navbar.js` - Updated navbar
+- `/app/frontend/src/components/Footer.js` - Updated footer
+- `/app/backend/server.py` - Main API with all endpoints
 
-## Tech Stack
-- Backend: FastAPI + MongoDB (Motor async driver)
-- Frontend: React 19 + Shadcn UI + Tailwind CSS
-- Auth: JWT + Emergent Google OAuth + Web3/ethers.js
-- Admin: Founder-only triple authentication
-- Styling: Custom dark theme with Playfair Display + Manrope + JetBrains Mono fonts
+## Database Schema
+- **artworks:** `{..., license_id: str}` (mandatory)
+- **contact_submissions:** `{name, email, subject, message, created_at}`
+- **users:** Standard user schema
+- **payment_orders:** Payment tracking
+
+## Admin Credentials
+- Email: `fera.artworks@gmail.com`
+- Password: `XKJ3ofWXVBtY2IhJ0MxvYz1tGSIi`
+
+## Deployment Notes
+- User will deploy on their own infrastructure (Railway/DigitalOcean)
+- Web3 features (MetaMask, WalletConnect) preserved
+- Environment variables needed post-deployment:
+  - `MONGO_URL`
+  - `JWT_SECRET`
+  - `GOOGLE_CLIENT_ID` (user's own credentials)
+  - `RESEND_API_KEY`
+  - `WALLETCONNECT_PROJECT_ID`
