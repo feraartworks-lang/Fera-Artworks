@@ -262,9 +262,6 @@ const HowItWorksPage = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-20"
           >
-            <div className="flex justify-center mb-6">
-              <Gem className="w-12 h-12 text-[#D4AF37]" strokeWidth={1} />
-            </div>
             <p className="text-[#D4AF37] text-xs uppercase tracking-[0.3em] mb-4">Understanding Ownership</p>
             <h1 className="font-serif text-5xl sm:text-6xl font-bold text-[#F5F5F0] mb-6">
               How It Works

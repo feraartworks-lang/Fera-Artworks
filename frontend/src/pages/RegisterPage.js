@@ -140,9 +140,6 @@ const RegisterPage = () => {
 
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="w-16 h-16 border border-[#D4AF37]/30 flex items-center justify-center mx-auto mb-6">
-              <Gem className="w-8 h-8 text-[#D4AF37]" strokeWidth={1.5} />
-            </div>
             <h1 className="font-serif text-3xl font-bold text-[#F5F5F0] mb-2">Create Account</h1>
             <p className="text-[#525252] text-sm">Join Imperial Art Gallery and start collecting</p>
           </div>

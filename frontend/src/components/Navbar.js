@@ -52,15 +52,17 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group" data-testid="logo-link">
-            <div className="w-10 h-10 border border-[#D4AF37]/50 flex items-center justify-center group-hover:border-[#D4AF37] transition-colors duration-300">
-              <Gem className="w-5 h-5 text-[#D4AF37]" strokeWidth={1.5} />
-            </div>
             <div className="hidden sm:block">
               <span className="font-serif text-lg font-bold text-[#F5F5F0] tracking-wider">
                 IMPERIAL
               </span>
               <span className="font-serif text-xs text-[#D4AF37] tracking-[0.3em] block -mt-1">
                 ART GALLERY
+              </span>
+            </div>
+            <div className="sm:hidden">
+              <span className="font-serif text-lg font-bold text-[#F5F5F0] tracking-wider">
+                IMPERIAL
               </span>
             </div>
           </Link>
