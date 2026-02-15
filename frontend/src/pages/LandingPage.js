@@ -426,10 +426,6 @@ const LandingPage = () => {
             viewport={{ once: true }}
             variants={stagger}
           >
-            <motion.div variants={fadeIn} className="flex justify-center mb-8">
-              <Crown className="w-10 h-10 text-[#D4AF37]" strokeWidth={1} />
-            </motion.div>
-
             <motion.h2 variants={fadeInUp} className="font-serif text-4xl sm:text-5xl font-bold text-[#F5F5F0] mb-6">
               Begin Your Collection
             </motion.h2>
