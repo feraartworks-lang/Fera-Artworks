@@ -1,101 +1,129 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Crown, Gem } from 'lucide-react';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  const footerLinks = {
+    platform: [
+      { path: '/gallery', label: 'Gallery' },
+      { path: '/marketplace', label: 'Marketplace' },
+      { path: '/how-it-works', label: 'How It Works' },
+    ],
+    legal: [
+      { path: '/license-agreement', label: 'License Agreement' },
+      { path: '/privacy-policy', label: 'Privacy Policy' },
+      { path: '/terms-of-service', label: 'Terms of Service' },
+    ],
+    support: [
+      { path: '/help-center', label: 'Help Center' },
+      { path: '/contact', label: 'Contact Us' },
+      { path: '/faq', label: 'FAQ' },
+    ],
+  };
+
   return (
-    <footer className="border-t border-border bg-black/50" data-testid="footer">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="relative border-t border-[#D4AF37]/10 bg-[#030303]" data-testid="footer">
+      {/* Top Decorative Line */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16 bg-gradient-to-b from-[#D4AF37]/30 to-transparent" />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary flex items-center justify-center">
-                <span className="font-serif font-bold text-primary-foreground text-lg">A</span>
+          <div className="lg:col-span-1">
+            <Link to="/" className="flex items-center space-x-3 mb-6 group">
+              <div className="w-12 h-12 border border-[#D4AF37]/30 flex items-center justify-center group-hover:border-[#D4AF37] transition-colors duration-300">
+                <Crown className="w-6 h-6 text-[#D4AF37]" strokeWidth={1.5} />
               </div>
-              <span className="font-serif text-xl font-bold text-foreground tracking-wider">
-                IMPERIAL ART GALLERY
-              </span>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              The premium platform for digital art ownership. License-based, secure, and globally accessible.
+              <div>
+                <span className="font-serif text-xl font-bold text-[#F5F5F0] tracking-wider block">
+                  IMPERIAL
+                </span>
+                <span className="font-serif text-xs text-[#D4AF37] tracking-[0.3em] block -mt-0.5">
+                  ART GALLERY
+                </span>
+              </div>
+            </Link>
+            <p className="text-[#525252] text-sm leading-relaxed mb-6">
+              The premier platform for digital art ownership. License-based, secure, and globally accessible.
             </p>
+            {/* Decorative Element */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-px bg-[#D4AF37]/30" />
+              <Gem className="w-3 h-3 text-[#D4AF37]/50" strokeWidth={1.5} />
+              <div className="w-8 h-px bg-[#D4AF37]/30" />
+            </div>
           </div>
 
-          {/* Platform */}
+          {/* Platform Links */}
           <div>
-            <h4 className="font-serif text-foreground mb-4">Platform</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/gallery" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link to="/marketplace" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Marketplace
-                </Link>
-              </li>
-              <li>
-                <Link to="/how-it-works" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  How It Works
-                </Link>
-              </li>
+            <h4 className="font-serif text-sm uppercase tracking-[0.2em] text-[#D4AF37] mb-6">
+              Platform
+            </h4>
+            <ul className="space-y-4">
+              {footerLinks.platform.map((link) => (
+                <li key={link.path}>
+                  <Link 
+                    to={link.path} 
+                    className="text-[#A3A3A3] hover:text-[#F5F5F0] text-sm transition-colors duration-300"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Legal Links */}
           <div>
-            <h4 className="font-serif text-foreground mb-4">Legal</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/license-agreement" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  License Agreement
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy-policy" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms-of-service" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
+            <h4 className="font-serif text-sm uppercase tracking-[0.2em] text-[#D4AF37] mb-6">
+              Legal
+            </h4>
+            <ul className="space-y-4">
+              {footerLinks.legal.map((link) => (
+                <li key={link.path}>
+                  <Link 
+                    to={link.path} 
+                    className="text-[#A3A3A3] hover:text-[#F5F5F0] text-sm transition-colors duration-300"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Support Links */}
           <div>
-            <h4 className="font-serif text-foreground mb-4">Support</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/help-center" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  FAQ
-                </Link>
-              </li>
+            <h4 className="font-serif text-sm uppercase tracking-[0.2em] text-[#D4AF37] mb-6">
+              Support
+            </h4>
+            <ul className="space-y-4">
+              {footerLinks.support.map((link) => (
+                <li key={link.path}>
+                  <Link 
+                    to={link.path} 
+                    className="text-[#A3A3A3] hover:text-[#F5F5F0] text-sm transition-colors duration-300"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Imperial Art Gallery. All rights reserved.
-          </p>
-          <div className="flex space-x-4 mt-4 md:mt-0">
-            <span className="text-muted-foreground text-xs font-mono">
-              Powered by Blockchain Technology
-            </span>
+        {/* Bottom Section */}
+        <div className="mt-16 pt-8 border-t border-[#D4AF37]/10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-[#525252] text-xs tracking-wider">
+              © {currentYear} Imperial Art Gallery. All rights reserved.
+            </p>
+            <div className="flex items-center gap-2 text-[#525252] text-xs">
+              <div className="w-2 h-2 bg-[#D4AF37]/50 rotate-45" />
+              <span className="tracking-wider">Powered by Blockchain Technology</span>
+            </div>
           </div>
         </div>
       </div>
