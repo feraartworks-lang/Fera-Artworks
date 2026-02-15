@@ -117,11 +117,6 @@ const LandingPage = () => {
             variants={stagger}
             className="space-y-8"
           >
-            {/* Crown Icon */}
-            <motion.div variants={fadeIn} className="flex justify-center">
-              <Crown className="w-12 h-12 text-[#D4AF37] animate-float" strokeWidth={1} />
-            </motion.div>
-
             {/* Main Heading */}
             <motion.h1 
               variants={fadeInUp}
