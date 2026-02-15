@@ -96,7 +96,7 @@ const ContactUsPage = () => {
             className="text-center mb-16"
           >
             <div className="flex justify-center mb-6">
-              <Crown className="w-12 h-12 text-[#D4AF37]" strokeWidth={1} />
+              <Gem className="w-12 h-12 text-[#D4AF37]" strokeWidth={1} />
             </div>
             <p className="text-[#D4AF37] text-xs uppercase tracking-[0.3em] mb-4">Get in Touch</p>
             <h1 className="font-serif text-5xl sm:text-6xl font-bold text-[#F5F5F0] mb-6">

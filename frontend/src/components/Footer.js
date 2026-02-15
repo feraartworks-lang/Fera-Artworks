@@ -34,7 +34,7 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-3 mb-6 group">
               <div className="w-12 h-12 border border-[#D4AF37]/30 flex items-center justify-center group-hover:border-[#D4AF37] transition-colors duration-300">
-                <Crown className="w-6 h-6 text-[#D4AF37]" strokeWidth={1.5} />
+                <Gem className="w-6 h-6 text-[#D4AF37]" strokeWidth={1.5} />
               </div>
               <div>
                 <span className="font-serif text-xl font-bold text-[#F5F5F0] tracking-wider block">
