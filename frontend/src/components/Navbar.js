@@ -156,7 +156,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Button 
               variant="ghost" 
               size="icon"
@@ -175,7 +175,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-6 space-y-2 border-t border-[#D4AF37]/10 animate-fade-in-down">
+          <div className="lg:hidden py-6 space-y-2 border-t border-[#D4AF37]/10 animate-fade-in-down bg-[#050505]">
             {navLinks.map((link) => (
               <Link 
                 key={link.path}
