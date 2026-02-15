@@ -1,181 +1,129 @@
 {
-  "identity": {
-    "persona": "E1 - The Anti-AI Designer",
-    "philosophy": "Fusion of High-End Art Gallery & Cyberpunk Security. We don't build 'marketplaces'; we build 'Digital Vaults'.",
-    "principles": [
-      "Fusion: Renaissance Art meets Blockchain Terminal.",
-      "Emotion: The feeling of holding a rare asset.",
-      "Depth: Use z-index and glassmorphism to create a sense of security and layers.",
-      "Darkness: A gallery is dark so the art can shine."
+  "design_system": {
+    "identity": {
+      "name": "Imperial Art Gallery",
+      "aesthetic": "Renaissance Digital Luxury",
+      "core_values": ["Exclusivity", "Timelessness", "Digital Ownership", "Opulence"],
+      "emotional_tone": "Majestic, Mysterious, High-End, Secure"
+    },
+    "typography": {
+      "font_family": {
+        "headings": "Cinzel, Playfair Display, serif",
+        "body": "Manrope, sans-serif",
+        "accent": "Italiana, serif"
+      },
+      "scale": {
+        "h1": "text-5xl md:text-7xl font-bold tracking-tighter uppercase",
+        "h2": "text-4xl md:text-5xl font-semibold tracking-tight",
+        "h3": "text-2xl md:text-3xl font-medium tracking-wide",
+        "body_large": "text-lg md:text-xl leading-relaxed",
+        "body_small": "text-sm leading-loose tracking-wide uppercase"
+      },
+      "instructions": "Import 'Cinzel' and 'Italiana' from Google Fonts in index.css. Use Cinzel for all major section headings to evoke Roman/Imperial authority."
+    },
+    "colors": {
+      "palette": {
+        "background": {
+          "primary": "#050505",
+          "secondary": "#0F0F0F",
+          "tertiary": "#1A1A1A"
+        },
+        "text": {
+          "primary": "#F5F5F0",
+          "secondary": "#A3A3A3",
+          "muted": "#525252",
+          "gold": "#D4AF37"
+        },
+        "accent": {
+          "gold_primary": "#D4AF37",
+          "gold_dim": "#8A7028",
+          "gold_bright": "#FEE180",
+          "royal_red": "#4A0404",
+          "obsidian": "#000000"
+        },
+        "border": {
+          "subtle": "rgba(212, 175, 55, 0.15)",
+          "strong": "rgba(212, 175, 55, 0.4)"
+        }
+      },
+      "gradients": {
+        "gold_sheen": "linear-gradient(135deg, #8A7028 0%, #D4AF37 50%, #FEE180 100%)",
+        "dark_vignette": "radial-gradient(circle at center, transparent 0%, #050505 100%)",
+        "card_surface": "linear-gradient(180deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%)"
+      }
+    },
+    "layout": {
+      "grid_system": "Use a 12-column grid. For the Gallery, use a 'Masonry' or 'Museum Wall' layout (asymmetrical).",
+      "spacing": "Use generous spacing (py-24, py-32) between sections to create a museum-like atmosphere.",
+      "containers": "Max width 1400px for standard content, Full width for Hero and Immersive sections."
+    },
+    "ui_components": {
+      "buttons": {
+        "primary": "bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-black font-bold uppercase tracking-widest px-8 py-4 hover:scale-105 transition-transform duration-300 shadow-[0_0_20px_rgba(212,175,55,0.3)]",
+        "secondary": "bg-transparent border border-[#D4AF37] text-[#D4AF37] uppercase tracking-widest px-8 py-4 hover:bg-[#D4AF37] hover:text-black transition-colors duration-300",
+        "ghost": "text-[#F5F5F0] hover:text-[#D4AF37] uppercase tracking-widest text-sm transition-colors"
+      },
+      "cards": {
+        "style": "bg-[#0F0F0F]/80 backdrop-blur-md border border-[#D4AF37]/20 hover:border-[#D4AF37]/60 transition-all duration-500 group relative overflow-hidden",
+        "hover_effect": "Add a subtle inner glow or a 'shine' effect using a pseudo-element that moves across the card on hover."
+      },
+      "inputs": {
+        "style": "bg-transparent border-b border-[#333] focus:border-[#D4AF37] text-[#F5F5F0] placeholder:text-[#555] rounded-none px-0 py-4 transition-colors focus:outline-none"
+      }
+    },
+    "visual_enhancers": {
+      "textures": {
+        "noise": "Add a fixed position div with a noise texture image at 5% opacity over the entire app to give a 'film grain' or 'canvas' feel.",
+        "marble": "Use subtle marble textures in the background of specific sections (like the Footer or Auth pages)."
+      },
+      "ornaments": {
+        "borders": "Use double borders or 'corner accents' (L-shaped borders) on images to mimic picture frames.",
+        "dividers": "Use a central diamond or filigree icon in horizontal dividers."
+      }
+    },
+    "motion": {
+      "principles": "Slow, Regal, Cinematic.",
+      "transitions": {
+        "page_load": "initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2 }}",
+        "scroll_reveal": "initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, ease: 'easeOut' }}",
+        "hover": "transition-all duration-500 ease-out"
+      }
+    },
+    "assets": {
+      "images": {
+        "hero_bg": "https://images.unsplash.com/photo-1761437855740-c894da924d79?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "auth_bg": "https://images.unsplash.com/photo-1706292916761-a91850e328d4?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "gallery_placeholder_1": "https://images.unsplash.com/photo-1762117499087-2e1bb8e0bbe0?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "gallery_placeholder_2": "https://images.unsplash.com/photo-1764878177065-b129b853d9d1?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "gallery_placeholder_3": "https://images.unsplash.com/photo-1763069192793-ae8cbbbac026?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "gold_texture": "https://images.unsplash.com/photo-1760902419069-466f6f82c8b2?crop=entropy&cs=srgb&fm=jpg&q=85"
+      },
+      "icons": "Use Lucide React with thin stroke width (1px or 1.5px) to maintain elegance."
+    }
+  },
+  "implementation_plan": {
+    "phase_1_setup": [
+      "Update tailwind.config.js with new colors (gold, obsidian) and fonts (Cinzel).",
+      "Add @import for Cinzel and Italiana in index.css.",
+      "Create a global 'NoiseOverlay' component."
+    ],
+    "phase_2_components": [
+      "Redesign 'Button' component to match the Gold/Ghost styles.",
+      "Create 'GoldCard' component for artworks.",
+      "Create 'SectionHeading' component with ornate dividers."
+    ],
+    "phase_3_pages": [
+      "LandingPage: Implement full-screen Hero with 'hero_bg' and parallax text.",
+      "GalleryPage: Implement Masonry grid with 'GoldCard' components.",
+      "ArtworkDetailPage: Use a split-screen layout (Image Left, Details Right) with 'sticky' details.",
+      "AuthPages: Use 'auth_bg' as a side panel image."
     ]
   },
-  "typography": {
-    "strategy": "The 'Old Money Tech' Fusion",
-    "heading_font": {
-      "name": "Playfair Display",
-      "type": "Serif",
-      "usage": "Hero titles, Section headers, Art Titles",
-      "weights": ["400", "700"],
-      "import_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
-    },
-    "body_font": {
-      "name": "Manrope",
-      "type": "Sans-serif",
-      "usage": "UI text, descriptions, buttons",
-      "weights": ["400", "500", "600"],
-      "import_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap"
-    },
-    "mono_font": {
-      "name": "JetBrains Mono",
-      "type": "Monospace",
-      "usage": "License IDs, Prices, Transaction Hashes, Security Logs",
-      "weights": ["400"],
-      "import_url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
-    }
-  },
-  "colors": {
-    "theme": "dark",
-    "palette": {
-      "background": {
-        "default": "#050505",
-        "paper": "#0A0A0A",
-        "subtle": "#121212"
-      },
-      "primary": {
-        "main": "#00F0FF",
-        "hover": "#00C2CC",
-        "foreground": "#000000"
-      },
-      "secondary": {
-        "main": "#D4AF37",
-        "foreground": "#000000"
-      },
-      "accent": {
-        "neon_purple": "#BD00FF",
-        "signal_green": "#00FF94",
-        "error_red": "#FF2E2E"
-      },
-      "text": {
-        "primary": "#EDEDED",
-        "secondary": "#A1A1AA",
-        "muted": "#52525B"
-      },
-      "border": {
-        "default": "#27272A",
-        "active": "#3F3F46"
-      }
-    },
-    "gradients": {
-      "hero_glow": "radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%)",
-      "glass_surface": "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)",
-      "golden_sheen": "linear-gradient(45deg, #D4AF37 0%, #FEE180 50%, #D4AF37 100%)"
-    }
-  },
-  "layout_strategies": {
-    "marketing": {
-      "grid": "The Tetris Grid",
-      "spacing": "Generous (p-12 to p-24)",
-      "container": "max-w-7xl mx-auto"
-    },
-    "gallery": {
-      "grid": "Masonry or Dense Grid (min-w-[300px])",
-      "card_style": "Cardless or Minimal Border",
-      "gap": "gap-6"
-    },
-    "dashboard": {
-      "grid": "The Control Room (Bento)",
-      "density": "High",
-      "surface": "Glassmorphism Panels"
-    },
-    "secure_viewer": {
-      "layout": "Immersive Theater",
-      "background": "Deepest Black (#000000)",
-      "ui_overlay": "Floating Glass Controls"
-    }
-  },
-  "components": {
-    "buttons": {
-      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-widest font-bold text-xs px-8 py-3 transition-all hover:shadow-[0_0_20px_rgba(0,240,255,0.3)]",
-      "secondary": "border border-border bg-transparent hover:bg-white/5 text-foreground rounded-none uppercase tracking-widest text-xs px-8 py-3",
-      "ghost": "hover:bg-white/5 text-muted-foreground hover:text-foreground"
-    },
-    "cards": {
-      "glass": "bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl",
-      "solid": "bg-card border border-border",
-      "interactive": "group relative overflow-hidden border border-white/5 bg-white/[0.02] hover:border-primary/50 transition-colors duration-500"
-    },
-    "inputs": {
-      "style": "bg-black/20 border-white/10 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 rounded-none h-12 font-mono text-sm"
-    },
-    "navigation": {
-      "style": "fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md border-b border-white/5"
-    }
-  },
-  "visual_enhancers": {
-    "textures": [
-      "Noise overlay (opacity 0.03) on all solid backgrounds",
-      "Scanlines (subtle) on 'Secure Viewer' mode"
-    ],
-    "effects": [
-      "Glow: drop-shadow-[0_0_15px_rgba(0,240,255,0.3)] for active states",
-      "Blur: backdrop-blur-xl for overlays"
-    ],
-    "animations": {
-      "hover": "transition-all duration-300 ease-out hover:-translate-y-1",
-      "enter": "animate-in fade-in slide-in-from-bottom-4 duration-700"
-    }
-  },
-  "image_urls": {
-    "hero_backgrounds": [
-      {
-        "url": "https://images.unsplash.com/photo-1764258559789-40cf1eb2025f?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Neon Abstract Lines Pink",
-        "category": "hero"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1764258560286-b3aa856c8ff0?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Neon Abstract Lines Yellow",
-        "category": "hero"
-      }
-    ],
-    "gallery_context": [
-      {
-        "url": "https://images.unsplash.com/photo-1761403794164-65897bc570a6?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Modern Dark Gallery Interior",
-        "category": "about"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1767001376210-b16507b18c43?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Woman in Dark Gallery",
-        "category": "about"
-      }
-    ],
-    "tech_abstracts": [
-      {
-        "url": "https://images.unsplash.com/photo-1644190018970-53ab9d652f79?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Crypto Abstract Purple",
-        "category": "features"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1506555191898-a76bacf004ca?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Numbers Data Wall",
-        "category": "features"
-      }
-    ]
-  },
-  "instructions_to_main_agent": [
-    "1. SETUP: Install 'lucide-react' and 'framer-motion' immediately.",
-    "2. FONTS: Add the Google Fonts imports to index.css immediately.",
-    "3. TAILWIND: Update tailwind.config.js with the colors and fonts defined above.",
-    "4. COMPONENTS: When using Shadcn, override the 'rounded-md' with 'rounded-none' or 'rounded-sm' to match the sharp, technical aesthetic.",
-    "5. LAYOUT: Do not use standard containers. Use full-width sections with internal max-w constraints.",
-    "6. SECURE VIEWER: This is the core feature. It must look like a 'Vault'. Use dark backgrounds, mono fonts for metadata, and disable right-click via JS.",
-    "7. IMAGES: Use the provided URLs for placeholders. Do not use generic placeholders."
-  ],
   "universal_guidelines": [
-    "Avoid 'AI Slop': No generic gradients, no centered text blocks without purpose.",
-    "Dark Mode First: Design for dark mode primarily. Light mode is secondary.",
-    "Micro-interactions: Every button must have a hover state. Every page load must have a stagger animation.",
-    "Data-TestID: All interactive elements must have data-testid attributes."
+    "NEVER use default blue/purple shades. Stick to the Gold/Black/Grey palette.",
+    "Always use 'Cinzel' for H1 and H2 headings.",
+    "Ensure all interactive elements have a 'hover' state that involves a color shift to Gold.",
+    "Use 'backdrop-blur' heavily for overlays to maintain the 'Glass' aesthetic.",
+    "Dark mode is the ONLY mode. Do not implement a light mode toggle unless specifically requested (user said 'Dark theme preferred')."
   ]
 }
