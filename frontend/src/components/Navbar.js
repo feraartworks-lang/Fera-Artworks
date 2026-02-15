@@ -66,12 +66,12 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-12">
+          <div className="hidden lg:flex items-center space-x-10">
             {navLinks.map((link) => (
               <Link 
                 key={link.path}
                 to={link.path} 
-                className={`relative text-xs uppercase tracking-[0.2em] transition-colors duration-300 py-2 ${
+                className={`relative text-xs uppercase tracking-[0.15em] transition-colors duration-300 py-2 whitespace-nowrap ${
                   isActive(link.path) 
                     ? 'text-[#D4AF37]' 
                     : 'text-[#A3A3A3] hover:text-[#F5F5F0]'
