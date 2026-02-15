@@ -165,15 +165,11 @@ const LandingPage = () => {
             {/* Stats */}
             <motion.div
               variants={fadeInUp}
-              className="grid grid-cols-3 gap-8 max-w-2xl mx-auto pt-16"
+              className="grid grid-cols-2 gap-8 max-w-xl mx-auto pt-16"
             >
               <div className="text-center">
                 <p className="font-serif text-4xl sm:text-5xl text-[#D4AF37] font-bold">1,000+</p>
                 <p className="text-[#525252] text-xs uppercase tracking-[0.2em] mt-2">Unique Artworks</p>
-              </div>
-              <div className="text-center border-x border-[#D4AF37]/20">
-                <p className="font-serif text-4xl sm:text-5xl text-[#D4AF37] font-bold">5%</p>
-                <p className="text-[#525252] text-xs uppercase tracking-[0.2em] mt-2">License Fee</p>
               </div>
               <div className="text-center">
                 <p className="font-serif text-4xl sm:text-5xl text-[#D4AF37] font-bold">∞</p>
